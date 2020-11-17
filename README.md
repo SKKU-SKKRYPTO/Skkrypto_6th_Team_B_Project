@@ -1,1 +1,1 @@
-# Skkrypto_6th_Team_A_Project
+# Skkrypto_6th_Team_B_Project
