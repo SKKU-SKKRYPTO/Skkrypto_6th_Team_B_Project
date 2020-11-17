@@ -1,14 +1,15 @@
 pragma solidity >=0.4.24 <=0.5.6;
 
-import "./Ownable.sol";
-
-
-
-contract Party is Ownable {
+contract Party {
+    address public owner;
     address[3] participants;
     uint startTime = 0;
     uint people = 0;
     bool empty = true;
+
+    constructor() public {
+        owner = msg.sender;
+    }
 
      // 함수 호출하면 컨트랙트의 주소 반환    
     function getContractAddress() public view returns (address) {
@@ -20,7 +21,7 @@ contract Party is Ownable {
     // 파티원이 컨트랙트에 송금
     function sending(uint _value) public payable {
         require(msg.value > _value); // 잔액체크? 이거 0 말고 송금해야 되는 금액으로 바꿔보자
-        participant[people++] = msg.sender; // participant 배열에 호출한 사람 주소 추가하고 인원+1
+        participants[people++] = msg.sender; // participant 배열에 호출한 사람 주소 추가하고 인원+1
         if(people == 3) {
             empty = false;
             startTime = now;
@@ -44,7 +45,7 @@ contract Party is Ownable {
     }
 
     // 투표 결과에 따라 참가자를 처벌 (잘못한 사람 지갑 주소)
-    function kickMember(address _criminal) external refundable() {
+    function kickMember(uint _value, address _criminal) external refundable() {
         require(msg.sender != owner);
         uint _refund = _value / (now - startTime);
         require(msg.sender != _criminal); // 처벌자가 아니여야 환불이 가능함
@@ -54,7 +55,7 @@ contract Party is Ownable {
     // 투표 결과에 따라 해산 (참가자를 특정하기 힘든 경우)
     // 계약이 진행된 일자/30 만큼 방장에게 송금
     // 잔액을 참가자에게 돌려주고 컨트랙트를 해산
-    function breakUpParty() external refundable() {
+    function breakUpParty(uint _value) external refundable() {
         require(msg.sender != owner);
         uint _refund = _value / (now - startTime);
         transfer(_refund);
@@ -65,8 +66,7 @@ contract Party is Ownable {
     }
     
     function deposit() public payable {
-        uint days = now - startTime;
-        require(days >= 30);
+        require(now - startTime >= 30);
         require(msg.sender == owner);
         transfer(getBalance());
     }
