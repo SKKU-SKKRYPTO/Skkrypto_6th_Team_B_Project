@@ -59,7 +59,7 @@ contract ShareContract {
     **          참여한 파티 인덱스 매핑 후 본인까지 4명이 되면 다음 빈 방을 가르키도록 함.
     */
     function joinParty() public payable {
-        require(msg.value > value);
+        require(getBalancePartyone() >= value);
         getPartyIdx[msg.sender] = emptyPartyIdx;
         parties[emptyPartyIdx].people++;
         if(parties[emptyPartyIdx].people == 4)
@@ -113,44 +113,60 @@ contract ShareContract {
     
     /*
     ** _calculateRefund() 함수
-    ** 인자:    uint _value     (지불 금액)
-    **          uint startTime  (파티 시작 날짜)
+    ** 인자:    uint startTime  (파티 시작 날짜)
     ** 반환값:  uint            (환불액)
     ** 설명:    계약 위반으로 파티가 조기 종료되는 경우,
     **          환불을 받을 금액을 반환하는 함수.
     **          지불한 금액에서 파티가 정상적으로 진행된 날짜만큼 차감하여 환불함.
     */
-    function _calculateRefund(uint _value, uint startTime) internal view returns (uint) {
-        uint refund = _value / (now - startTime);
+    function _calculateRefund(uint startTime) internal view returns (uint) {
+        uint passedDay = now - startTime;
+        uint oneDayCost = value / 30; // 하루당 가격
+        uint refund = oneDayCost * (30 days - passedDay); // 하루당가격 * 남은 기간 (환불받을 가격)
         return refund;
     }
     
     /*
     ** kickSomeone() 함수
-    ** 인자:    uint    _value     (지불 금액)
-    **          address _criminal  (계약 위반자)
+    ** 인자:    address _criminal  (계약 위반자)
     ** 반환값:  x
     ** 설명:    계약 위반으로 파티가 조기 종료되는 경우,
     **          계약 위반자를 제외한 파티원에게 환불이 이루어지는 함수.
     */
-    function kickSomeone(uint _value, address _criminal) external refundable() {
+    function kickSomeone(address _criminal) external refundable() {
         require(msg.sender != _criminal);
         uint partyIdx = getPartyIdx[msg.sender];
         isRefunded[msg.sender] = true;
-        transfer(_calculateRefund(_value, parties[partyIdx].startTime));
+        transfer(_calculateRefund(parties[partyIdx].startTime));
     }
 
     /*
     ** breakUpParty() 함수
-    ** 인자:    uint    _value     (지불 금액)
+    ** 인자:    x
     ** 반환값:  x
     ** 설명:    계약 위반으로 파티가 조기 종료되나, 계약 위반자를 특정하기 힘든 경우,
     **          모든 파티원에게 환불이 이루어지는 함수.
     */
-    function breakUpParty(uint _value) external refundable() {
+    function breakUpParty() external refundable() {
         uint partyIdx = getPartyIdx[msg.sender];
         isRefunded[msg.sender] = true;
-        transfer(_calculateRefund(_value, parties[partyIdx].startTime));
+        transfer(_calculateRefund(parties[partyIdx].startTime));
+    }
+    
+    /*
+    ** withdrawBreakParty() 함수
+    ** 인자:    x
+    ** 반환값:  x
+    ** 설명: 파티가 조기종료된 경우, 진행된 날짜만큼의 금액을 방장이 인출할 수 있게하는 함수
+    **       파티가 조기종료된 원인이 방장이 아닐 경우에만 실행가능
+    **       여기서 now는 조기 종료된 시점이어야하므로 조기 종료되었을 때 해당 함수를 바로 실행해야함
+    */
+    function withdrawBreakParty() public {
+        uint partyIdx = getPartyIdx[msg.sender];
+        uint passedDay = now - parties[partyIdx].startTime;
+        uint oneDayCost = value / 30; // 하루당 가격
+        uint refund = oneDayCost * passedDay; // 하루당가격 * 지난 기간
+        transfer(refund);
     }
     
     /*
@@ -178,6 +194,16 @@ contract ShareContract {
         require(now - parties[idx].startTime >= 30 days);
         uint returnValue = value * 3;
         transfer(returnValue);
+    }
+
+    /*
+    ** getBalancePartyone() 함수
+    ** 인자:    x
+    ** 반환값:  계정 잔액
+    ** 설명: 함수를 호출한 계정의 잔액 반환
+    */
+    function getBalancePartyone() internal view returns (uint) {
+        return address(msg.sender).balance;
     }
 
     /*
