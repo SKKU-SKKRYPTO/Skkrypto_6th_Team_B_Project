@@ -6,6 +6,7 @@ contract ShareContract {
     // 컨트랙트 배포자
     constructor() public {
         owner = msg.sender;
+        parties.push(Party(msg.sender, 0, 4));
     }
 
     Party[] internal parties;
@@ -13,7 +14,7 @@ contract ShareContract {
     mapping (address => uint) getPartyIdx;  // 사용자의 파티 인덱스
     mapping (address => bool) isRefunded;   // 사용자가 환불을 받은적이 있는지 체크함
 
-    uint emptyPartyIdx = 0;                 // 비어있는 파티 인덱스
+    uint emptyPartyIdx = 1;                 // 비어있는 파티 인덱스
     bool isEmptyParty = false;              // 빈 파티 유무
     uint totalPartyNumber = 0;                   // 방 개수
     uint value = 1000000000000000000;       // 1Klay, peb단위
@@ -31,6 +32,7 @@ contract ShareContract {
     ** 설명:    방을 새로 만드는 함수. msg.sender가 새로운 방의 owner가 된다.
     */
     function createParty() public {
+        require(getPartyIdx[msg.sender] == 0);
         uint id = parties.push(Party(msg.sender, 0, 1)) - 1;
         getPartyIdx[msg.sender] = id;
         isRefunded[msg.sender] = true;
@@ -61,6 +63,7 @@ contract ShareContract {
     function joinParty() public payable {
         require(getBalancePartyone() >= value);
         getPartyIdx[msg.sender] = emptyPartyIdx;
+        isRefunded[msg.sender] = false;
         parties[emptyPartyIdx].people++;
         if(parties[emptyPartyIdx].people == 4)
             _updateEmptyPartyIdx();
@@ -75,7 +78,7 @@ contract ShareContract {
     */
     function _updateEmptyPartyIdx() internal {
         emptyPartyIdx++;
-        if (emptyPartyIdx >= totalPartyNumber)
+        if (emptyPartyIdx >= totalPartyNumber + 1)
             isEmptyParty = false;
     }
 
@@ -134,6 +137,7 @@ contract ShareContract {
     **          계약 위반자를 제외한 파티원에게 환불이 이루어지는 함수.
     */
     function kickSomeone(address _criminal) external refundable() {
+        getPartyIdx[msg.sender] = 0;
         require(msg.sender != _criminal);
         uint partyIdx = getPartyIdx[msg.sender];
         isRefunded[msg.sender] = true;
@@ -150,6 +154,7 @@ contract ShareContract {
     function breakUpParty() external refundable() {
         uint partyIdx = getPartyIdx[msg.sender];
         isRefunded[msg.sender] = true;
+        getPartyIdx[msg.sender] = 0;
         transfer(_calculateRefund(parties[partyIdx].startTime));
     }
     
@@ -166,6 +171,8 @@ contract ShareContract {
         uint passedDay = now - parties[partyIdx].startTime;
         uint oneDayCost = value / 30; // 하루당 가격
         uint refund = oneDayCost * passedDay; // 하루당가격 * 지난 기간
+
+        getPartyIdx[msg.sender] = 0;
         transfer(refund);
     }
     
@@ -192,6 +199,7 @@ contract ShareContract {
         uint idx = getPartyIdx[msg.sender];
         require(msg.sender == parties[idx].owner);
         require(now - parties[idx].startTime >= 30 days);
+        getPartyIdx[msg.sender] = 0;
         uint returnValue = value * 3;
         transfer(returnValue);
     }
@@ -217,10 +225,4 @@ contract ShareContract {
         msg.sender.transfer(_value);
         return true;
     }
-    
-    /*
-    function getContractAddress() public view returns (address) {
-        return address(this);
-    }
-    */
 }
