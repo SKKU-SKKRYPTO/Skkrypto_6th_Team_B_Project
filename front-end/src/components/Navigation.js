@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import logo from "../images/logo.png";
+import logo from "Images/logo.png";
 import styled from "styled-components";
 
 const Nav = styled.div`
