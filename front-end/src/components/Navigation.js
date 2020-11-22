@@ -56,7 +56,9 @@ function Navigation() {
 	return (
 		<Nav>
 			<Logo>
-				<img src ={logo} width="300" height="300"/>
+				<Link to="/">
+					<img src ={logo} width="300" height="300" alt="홈페이지 로고"/>
+				</Link>
 			</Logo>
 			<Menu>
 				<List>

@@ -1,14 +1,3 @@
-import React from 'react';
-import styled from "styled-components";
+import MatchingContainer from "./MatchingContainer";
 
-class matching extends React.Component{
-	render(){
-		return(
-			<div>
-
-			</div>
-		);
-	}
-}
-
-export default matching;
+export default MatchingContainer;

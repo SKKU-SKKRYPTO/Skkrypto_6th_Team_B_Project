@@ -1,14 +1,3 @@
-import React from 'react';
-import styled from "styled-components";
+import MypageContainer from "./MypageContainer";
 
-class mypage extends React.Component{
-	render(){
-		return(
-			<div>
-					
-			</div>
-		);
-	}
-}
-
-export default mypage;
+export default MypageContainer;

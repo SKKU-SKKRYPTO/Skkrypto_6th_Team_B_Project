@@ -1,14 +1,9 @@
-import React from 'react';
-import styled from "styled-components";
-
-class Intro extends React.Component{
-	render(){
-		return (
-			<div>
-					
-			</div>
-		);
-	}
-}
+const Intro = () => (
+	<>
+		<div>
+			Hello, Intro Page!
+		</div>
+	</>
+);
 
 export default Intro;

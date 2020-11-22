@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { HashRouter, Route } from "react-router-dom";
 import Navigation from "./Navigation";
+import Matching from "Routes/Matching";
 import Intro from "Routes/Intro";
-import matching from "Routes/Matching";
-import mypage from "Routes/Mypage";
+import Mypage from "Routes/Mypage";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -27,9 +27,9 @@ class App extends Component {
       <Container>
         <HashRouter>
           <Navigation />
+          <Route path="/matching" exact={true} component={Matching} />
           <Route path="/introduction" exact={true} component={Intro} />
-          <Route path="/matching" exact={true} component={matching} />
-          <Route path="/mypage" exact={true} component={mypage} />
+          <Route path="/mypage" exact={true} component={Mypage} />
         </HashRouter>
       </Container>
     );
