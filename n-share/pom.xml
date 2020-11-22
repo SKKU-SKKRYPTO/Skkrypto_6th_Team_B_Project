@@ -12,7 +12,7 @@
     <artifactId>n-share</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>n-share</name>
-    <description>A project for SKKRYTPO.</description>
+    <description>A project for SKKRYPTO.</description>
 
     <properties>
         <java.version>11</java.version>
