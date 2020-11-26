@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import logo from "../Images/logo.png";
+import logo from "Images/logo.png";
 import styled from "styled-components";
+import Toggle from "./Toggle";
 
 const Nav = styled.div`
 	display: flex;
 	/* position: absolute; */
-	width: 100%;
 	height: 200px;
 `;
 
@@ -38,6 +38,7 @@ const Item = styled.li`
 	padding: 0px 30px;
 	/* font-family: LG Smart UI; */
 	font-style: normal;
+	text-align: center;
 	font-weight: bold;
 	font-size: 36px;
 	line-height: 20px;
@@ -52,24 +53,91 @@ const MenuLink = styled(Link)`
 	}
 `;
 
-function Navigation() {
+const ToggleItem = styled.div`
+	margin: 40px 0px;
+`;
+
+// TODO: 로그아웃 버튼을 누르면 커버화면으로 리다이렉트 시켜주고 싶음
+const logOut = () => {
+	alert("로그아웃 되었어요.");
+}
+
+class DropDownMenu extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			modalVisible: false
+		};
+		this.openModal = this.openModal.bind(this);
+		this.closeModal = this.closeModal.bind(this);
+	}
+
+	openModal() {
+		this.setState({
+			modalVisible: true
+		});
+	}
+
+	closeModal = () => {
+		this.setState({
+			modalVisible: false
+		});
+	}
+
+	render() {
+		return (
+			<>
+				<MenuLink onClick={this.openModal}>마이페이지</MenuLink>
+				{
+					<Toggle visible={this.state.modalVisible}
+						onClose={this.closeModal}
+						maskClosable={true}
+						closable={false}>
+						<ToggleItem>
+							<MenuLink to="/home/setting" onClick={this.closeModal}>
+								개인정보 관리
+							</MenuLink>
+						</ToggleItem>
+						<hr />
+						<ToggleItem>
+							<MenuLink to="/home/party" onClick={this.closeModal}>
+								현재 매칭 정보
+							</MenuLink>
+						</ToggleItem>
+						<hr />
+						<ToggleItem>
+							<MenuLink to="/" onClick={event => {
+								logOut();
+								this.closeModal();
+							}}>
+								로그아웃
+							</MenuLink>
+						</ToggleItem>
+					</Toggle>
+				}
+			</>
+		);
+	}
+}
+
+const Navigation = () => {
 	return (
 		<Nav>
 			<Logo>
-				<Link to="/">
+				<Link to="/home">
 					<img src ={logo} width="300" height="300" alt="홈페이지 로고"/>
 				</Link>
 			</Logo>
 			<Menu>
 				<List>
 					<Item>
-						<MenuLink to="/Matching" >매칭 서비스</MenuLink>
+						<MenuLink to="/home" >매칭 서비스</MenuLink>
 					</Item>
 					<Item>
-						<MenuLink to="/Intro" >서비스 소개</MenuLink>
+						<MenuLink to="/home/intro" >서비스 소개</MenuLink>
 					</Item>
 					<Item>
-						<MenuLink to="/Mypage" >마이페이지</MenuLink>
+						<DropDownMenu />
 					</Item>
 				</List>
 			</Menu>

@@ -1,14 +1,10 @@
 import React from 'react';
 import "./Matching.css";
-import Navigation from "../../Components/Navigation";
 
 class Matching extends React.Component{
     render(){
         return(
             <div>
-                <div className="nav">
-                    <Navigation />
-                </div>
                 <div className="matching-wrap">
                     <div className="matching-container">
                         <div className="Party-owner">

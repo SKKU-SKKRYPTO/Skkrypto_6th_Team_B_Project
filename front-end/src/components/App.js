@@ -1,22 +1,37 @@
 import React, { Component } from 'react';
-import { HashRouter, Route } from "react-router-dom";
-import Matching from "Routes/Matching/Matching";
-import Intro from "Routes/Intro/Intro";
-import Mypage from "Routes/Mypage/Mypage";
-import Main from "Routes/Main/Main"
+import { HashRouter } from "react-router-dom";
+import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
+import caver from "caver";
+import Cover from "Routes/Cover";
+import Home from "Routes/Home";
 import './App.css';
 
-
-
 class App extends Component {
+  componentWillMount() {
+    /**
+     * sessionStorage는 브라우져에 데이터를 저장하는 기능
+     * 단, 브라우져 탭이 닫히면 사라짐
+     */
+    const walletFromSession = sessionStorage.getItem('walletInstance')
+
+    // walletInstance가 있으면 caver 지갑에 추가함
+    if (walletFromSession) {
+      try {
+        caver.klay.accounts.wallet.add(JSON.parse(walletFromSession))
+      } catch (e) {
+        // walletInstance가 유효하지 않으면 삭제함
+        sessionStorage.removeItem('walletInstance');
+      }
+    }
+  }
+
   render() {
     return (
-      <div className = "container">
+      <div className="Container">
         <HashRouter>
-          <Route path="/" exact={true} component={Main} />
-          <Route path="/Matching" exact={true} component={Matching} />
-          <Route path="/Intro" exact={true} component={Intro} />
-          <Route path="/Mypage" exact={true} component={Mypage} />
+          <PublicRoute path="/" exact={true} component={Cover} />
+          <PrivateRoute path="/home" exact={false} component={Home} />
         </HashRouter>
       </div>
     );
