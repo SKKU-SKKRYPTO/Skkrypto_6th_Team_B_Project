@@ -1,0 +1,98 @@
+.matching-wrap {
+    display: flex;
+    justify-content: center;
+    /* margin-top: 100px;
+    margin-bottom: 100px; */
+    padding: 100px 0;
+}
+
+.matching-container {
+    display: grid;
+    grid-template-columns: 330px 330px;
+    grid-template-rows: 470px;
+    grid-gap: 150px;
+}
+
+.Party-owner,
+.Party-member {
+    /* width: 330px;
+    height: 470px; */
+    background-color: #ffffff;
+
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    text-align: center;
+
+    padding: 50px 0;
+}
+
+.Party-owner h2,
+.Party-member h2 {
+    text-align: center;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 2em;
+}
+
+.Party-owner p,
+.Party-member p {
+    text-align: left;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+/*매칭하기 버튼*/
+.create-party{
+    background:#000000;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:60px;
+    font-size:1.6em;
+    padding:0 2em;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+    margin-top: 80px;
+}
+
+.create-party:hover{
+    background:#fff;
+    color:#000000;
+}
+  
+.create-party:before,.create-party:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #000000;
+    transition:400ms ease all;
+}
+
+.create-party:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+  }
+
+.create-party:hover:before,.create-party:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}
+
+
+
+/* .Party-owner {
+    
+}
+
+.Party-member {
+
+} */

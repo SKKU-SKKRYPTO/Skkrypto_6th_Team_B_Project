@@ -1,3 +1,3 @@
-import MypageContainer from "./MypageContainer";
+// import MypageContainer from "./MypageContainer";
 
-export default MypageContainer;
+// export default MypageContainer;

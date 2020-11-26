@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import logo from "Images/logo.png";
+import logo from "../Images/logo.png";
 import styled from "styled-components";
 
 const Nav = styled.div`
@@ -63,13 +63,13 @@ function Navigation() {
 			<Menu>
 				<List>
 					<Item>
-						<MenuLink to="/matching" >매칭 서비스</MenuLink>
+						<MenuLink to="/Matching" >매칭 서비스</MenuLink>
 					</Item>
 					<Item>
-						<MenuLink to="/introduction" >서비스 소개</MenuLink>
+						<MenuLink to="/Intro" >서비스 소개</MenuLink>
 					</Item>
 					<Item>
-						<MenuLink to="/mypage" >마이페이지</MenuLink>
+						<MenuLink to="/Mypage" >마이페이지</MenuLink>
 					</Item>
 				</List>
 			</Menu>

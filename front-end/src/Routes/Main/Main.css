@@ -1,0 +1,230 @@
+.Main-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.logo {
+    margin: 0px;
+    padding-left: 50px;
+}
+
+.center-box {
+    width: 750px;
+    padding-left: 300px;
+    margin: 0;
+}
+
+.button {
+    padding-left: 100px;
+}
+
+.text p{
+    font-size: 40px;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.loginLogo {
+    width: 250px;
+    height: 250px;
+    padding-left: 50px;
+}
+
+.login-closeButton,
+.signin-closeButton {
+    width: 35px;
+    height: 35px;
+}
+
+.login-modalHeader {
+    display: flex;
+}
+
+.login-closeButton {
+    position: relative;
+    top: 35px;
+    left: 539px;
+}
+
+.login-modalHeader h2 {
+    position: relative;
+    top: 202px;
+    left: 155px;
+    margin: 0;
+}
+
+
+/* 이용하러가기 버튼*/
+.join{
+    background:#000000;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:60px;
+    font-size:1.6em;
+    padding:0 2em;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+}
+
+.join:hover{
+    background:#fff;
+    color:#000000;
+}
+  
+.join:before,.join:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #000000;
+    transition:400ms ease all;
+}
+
+.join:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+  }
+
+.join:hover:before,.join:hover:after{
+    width:100%;
+    transition:800ms ease all;
+}
+
+/*login modal style*/
+.login-input-email,
+.login-input-password {
+    position: relative;
+    display: flex;
+    padding-left: 220px;
+    margin: 50px;
+}
+
+.login-input-email p,
+.login-input-password p{
+    width: 104px;
+    font-weight: 600;
+    
+}
+
+
+.login-input-email input,
+.login-input-password input{
+    background-color: #F4F5F7;
+    width: 280px;
+    height: 48px;
+    border: none;
+    outline-style: none;
+}
+
+.submit-login {
+    position: relative;
+    left: 670px;
+    top: -190px;
+
+
+    /* 여기 아래는 submit-login a랑 같이 지워도 되는 내용 */
+    width: 120px;
+    height: 120px;
+    background-color: #FF166B;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* .submit-login input{
+    position: relative;
+    width: 120px;
+    height: 120px;
+    background-color: #FF166B;
+    border: none;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 28px;
+    text-decoration: none;
+} */
+.submit-login a{
+    position: relative;
+    border: none;
+    text-decoration: none;
+    color: black;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 28px;
+}
+
+.signin {
+    position: relative;
+    width: 480px;
+    height: 65px;
+    text-align: center;
+    background-color: #FF166B;
+    left: 266px;
+    top: -130px;
+    font-weight: 600;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+}
+
+.singin p{
+    margin: 0;
+}
+
+/*회원가입 모달*/
+.signin-modalHeader {
+    display: flex;
+}
+
+.signin-closeButton {
+    position: relative;
+    top: 105px;
+    left: 30px;
+}
+
+.signin-input-email input,
+.signin-input-password input{
+    background-color: #F4F5F7;
+    width: 280px;
+    height: 50px;
+    border: none;
+    outline-style: none;
+}
+
+
+
+.submit-signin input{
+    position: relative;
+    width: 300px;
+    height: 65px;
+    background-color: #FF166B;
+    border: none;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 28px;
+    text-decoration: none;
+
+    top: 70px;
+}
+
+.signin-button {
+    border-bottom: 2px solid #000000;
+    background: none;
+    font-size: 18px;
+    margin: 10px;
+    border: none;
+}
+
+.signinLogo{
+    width: 250px;
+    height: 250px;
+    padding-left:125px;
+}

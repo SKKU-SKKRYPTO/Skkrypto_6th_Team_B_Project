@@ -1,9 +1,9 @@
-const Intro = () => (
-	<>
-		<div>
-			Hello, Intro Page!
-		</div>
-	</>
-);
+// const Intro = () => (
+// 	<>
+// 		<div>
+// 			Hello, Intro Page!
+// 		</div>
+// 	</>
+// );
 
-export default Intro;
+// export default Intro;
