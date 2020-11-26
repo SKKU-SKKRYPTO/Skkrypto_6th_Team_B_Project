@@ -12,7 +12,7 @@ class Cover extends React.Component{
 		super(props);
 		this.state = {
 			visible1 : false,
-			visible2 : false,
+			//visible2 : false,
 			email: "",
 			password: "",
 			text:"계정공유를 안전하고 편리하게"
@@ -32,6 +32,7 @@ class Cover extends React.Component{
 		});
 	}
 
+	/*
 	_openModal2 = function() {
 		this.setState({
 			visible2 : true
@@ -50,6 +51,7 @@ class Cover extends React.Component{
 		});
 		alert('회원가입 완료! 로그인해주세요!');
 	}
+	*/
 
 	// useInterval(){
 	//     setInterval(() => {
@@ -124,7 +126,6 @@ class Cover extends React.Component{
 				<div className="logo">
 					<img src ={logo} width="300" height="300" alt="로고 이미지"/>
 				</div>
-				<LoginForm />
 				<div className="center-box">
 					<div className="text">
 						<p >{this.state.text}</p>
@@ -142,17 +143,11 @@ class Cover extends React.Component{
 									<h2>로그인</h2>
 									<img className="login-closeButton" src={closeButton} onClick={()=>this._closeModal1()} alt="닫기 버튼"/>
 								</div>
+									
 									<form>
 										<div className="login-input-email">
-											<p>이메일</p>
-											<input type="text" placeholder="이메일 입력..."></input>
+											<LoginForm />
 										</div>
-
-										<div className="login-input-password">
-											<p>비밀번호</p>
-											<input type="text" placeholder="비밀번호 입력..."></input>
-										</div>
-
 										<div className="submit-login">
 											{/* <input type="button" value="로그인"></input> */}
 											{/* 여기 타입도 submit으로? */}
@@ -161,33 +156,7 @@ class Cover extends React.Component{
 									</form>
 										<div className="signin">
 											<p>아이디가 없으시다면?</p>
-											<button className="signin-button" onClick={() => this._openModal2()}>회원가입</button>
-											<Modal className="sigin-modal"
-												   visible={this.state.visible2} 
-												   width="500" height="800"
-												   effect="fadeInUp"
-												   onClickAway = {() => this._closeModal2()}>
-												<div className="signin-modal-container">
-													<div className="signin-modalHeader">
-														<img className="signinLogo" src={logo} alt="회원가입 창 로고 이미지"/>
-														<img className="signin-closeButton" src={closeButton} onClick={()=>this._closeModal2()} alt="회원가입 창 닫기 버튼"/>
-													</div>
-													<form>
-														<div className="signin-input-email">
-															<p>이메일</p>
-															<input type="text" placeholder="이메일 입력..."></input>
-														</div>
-														<div className="signin-input-password">
-															<p>비밀번호</p>
-															<input type="text" placeholder="비밀번호 입력..."></input>
-														</div>
-														<div className="submit-signin">
-															<input type="submit" value="가입" onClick={() => this._closeModalAndAlert()}></input>
-														</div>
-													</form>
-												</div>
-
-											</Modal>
+											<button className="signin-button" onClick={() => alert("클레이튼 지갑에서 계정을 생성하세요, 무료입니다 !")}>회원가입</button>
 										</div>
 							</div> 
 						</Modal>
