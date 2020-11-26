@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import logo from "Images/logo.png";
 import styled from "styled-components";
 import Toggle from "./Toggle";
+import caver from "caver";
 
 const Nav = styled.div`
 	display: flex;
@@ -59,6 +60,8 @@ const ToggleItem = styled.div`
 
 // TODO: 로그아웃 버튼을 누르면 커버화면으로 리다이렉트 시켜주고 싶음
 const logOut = () => {
+	caver.klay.accounts.wallet.clear()
+	sessionStorage.removeItem('walletInstance')
 	alert("로그아웃 되었어요.");
 }
 
