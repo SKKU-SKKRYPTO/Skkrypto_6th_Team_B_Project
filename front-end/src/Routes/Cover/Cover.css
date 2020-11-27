@@ -24,26 +24,29 @@
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
+.login-modal-container {
+    display: grid;
+    grid-template-rows: 3;
+}
+
+/*modal header*/
+.login-modalHeader {
+    display: flex;
+}
+
 .loginLogo {
     width: 250px;
     height: 250px;
     padding-left: 50px;
 }
 
-.login-closeButton,
-.signin-closeButton {
-    width: 35px;
-    height: 35px;
-}
-
-.login-modalHeader {
-    display: flex;
-}
-
-.login-closeButton {
+.login-closeButton{
     position: relative;
     top: 35px;
     left: 539px;
+
+    width: 35px;
+    height: 35px;
 }
 
 .login-modalHeader h2 {
@@ -97,29 +100,46 @@
 }
 
 /*login modal style*/
-.login-input-email,
-.login-input-password {
+.login-input{
     position: relative;
     display: flex;
     padding-left: 220px;
-    margin: 50px;
+    margin: 0 50px;
 }
 
-.login-input-email p,
-.login-input-password p{
-    width: 104px;
+.login-input p{
     font-weight: 600;
-    
+    font-size: 20px;
+}
+
+.login-input label {
+    font-size: 20px;
 }
 
 
-.login-input-email input,
-.login-input-password input{
+.login-input #input-password,
+.login-input .Auth__input {
     background-color: #F4F5F7;
     width: 280px;
     height: 48px;
     border: none;
     outline-style: none;
+}
+
+.login__button {
+    position: relative;
+    left: 50px;
+    /* width: 120px;
+    height: 120px; */
+    background-color: #FF166B;
+    border: none;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 28px;
+    text-decoration: none;
+    padding: 20px;
+    color: black;
 }
 
 .submit-login {
@@ -167,7 +187,7 @@
     text-align: center;
     background-color: #FF166B;
     left: 266px;
-    top: -130px;
+    
     font-weight: 600;
     font-size: 18px;
     display: flex;
@@ -228,3 +248,5 @@
     height: 250px;
     padding-left:125px;
 }
+
+/*login form*/

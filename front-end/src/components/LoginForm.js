@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import cx from 'classnames'
 import caver from 'caver'
+import { Link } from "react-router-dom";
 
 /*
 ** 로그인 폼에서 키스토어 파일과 비밀번호를 읽거나,
@@ -182,8 +183,8 @@ class LoginForm extends React.Component {
             ? (
               <Fragment>
                 <div className="Auth__keystore">
-                  <p className="Auth__label" htmlFor="keystore">Keystore:</p>
-                  <label className="Auth__button" htmlFor="keystore">Upload</label>
+                  <p className="Auth__label" htmlFor="keystore">Keystore file:</p>
+                  <label className="Auth__button" htmlFor="keystore">Upload: </label>
                   <input
                     className="Auth__file"
                     id="keystore"
@@ -218,7 +219,8 @@ class LoginForm extends React.Component {
               </Fragment>
             )
           }
-          <button className="Auth__button" onClick={this.handleLogin}>Login</button>
+          <Link to="/home" className="login__button" onClick={this.handleLogin}>로그인</Link>
+          {/* <button className="Auth__button" onClick={this.handleLogin}>Login</button> */}
           <p className="Auth__keystoreMsg">{keystoreMsg}</p>
           <p className="Auth__toggleAccessButton" onClick={this.toggleAccessType}>
             {accessType === 'privateKey'

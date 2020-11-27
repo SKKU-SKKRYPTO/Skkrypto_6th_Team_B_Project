@@ -3,7 +3,6 @@ import "./Cover.css";
 import logo from "../../Images/logo.png";
 import closeButton from "../../Images/closeButton.png";
 import Modal from 'react-awesome-modal';
-import { Link } from "react-router-dom";
 import LoginForm from 'Components/LoginForm';
 
 class Cover extends React.Component{
@@ -137,23 +136,23 @@ class Cover extends React.Component{
 							   width="1000" height="700"
 							   effect="fadeInUp"
 							   onClickAway = {() => this._closeModal1()}>
-							<div className="login-modal-cotainer">
+							<div className="login-modal-container">
 								<div className="login-modalHeader">
 									<img className="loginLogo" src={logo} alt="로그인 폼의 로고 이미지"/>
 									<h2>로그인</h2>
 									<img className="login-closeButton" src={closeButton} onClick={()=>this._closeModal1()} alt="닫기 버튼"/>
 								</div>
 									
-									<form>
-										<div className="login-input-email">
+									{/* <form> */}
+										<div className="login-input">
 											<LoginForm />
 										</div>
-										<div className="submit-login">
-											{/* <input type="button" value="로그인"></input> */}
-											{/* 여기 타입도 submit으로? */}
+										{/* <div className="submit-login">
+											<input type="button" value="로그인"></input>
+											여기 타입도 submit으로?
 											<Link to="/home" className="input" onClick={()=>this._closeModal1()}>로그인</Link>
-										</div>
-									</form>
+										</div> */}
+									{/* </form> */}
 										<div className="signin">
 											<p>아이디가 없으시다면?</p>
 											<button className="signin-button" onClick={() => alert("클레이튼 지갑에서 계정을 생성하세요, 무료입니다 !")}>회원가입</button>
