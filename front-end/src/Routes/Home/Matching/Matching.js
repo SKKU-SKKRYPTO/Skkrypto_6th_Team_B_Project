@@ -82,10 +82,6 @@ class Matching extends React.Component{
         return(
             <>
             <div>
-                {/* <div>
- 					<button onClick={this.getParticipant}>확인</button>
-                     {this.state.participant}
- 				</div> */}
                 <div className="matching-wrap">
                     <div className="matching-container">
                         <div className="Party-owner">
