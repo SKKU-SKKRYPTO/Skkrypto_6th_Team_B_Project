@@ -6,31 +6,33 @@ contract ShareContract {
     // 컨트랙트 배포자
     constructor() public {
         owner = msg.sender;
-        parties.push(Party(msg.sender, 0, 4));
+        parties.push(Party(msg.sender, 0, 4, 0));
     }
 
     Party[] internal parties;
+    Vote[] internal Votes;
     
     mapping (address => uint) getPartyIdx;  // 사용자의 파티 인덱스
     mapping (address => bool) isRefunded;   // 사용자가 환불을 받은적이 있는지 체크함
+    mapping (address => uint) isVoted;      // 사용자의 투표 횟수
     
     uint emptyPartyIdx = 1;                 // 비어있는 파티 인덱스
     bool isEmptyParty = false;              // 빈 파티 유무
     uint totalPartyNumber = 0;                   // 방 개수
-    uint value = 100000000000000000;        // 0.1Klay, peb단위
-    uint voteCount = 0;                     //투표한 사람 수
-    uint cons = 0;                          //방 폭파 반대표 개수
-    uint startVote = 0;                     //투표 시작 시간
+    uint value = 100000000000000000;        // 1Klay, peb단위
     bool canRefund = false;                 //환불 가능
+    uint totalVote = 0;                     //지금까지 행해진 투표 수
 
     struct Party {
         address owner;
         uint startTime;                     // 방장이 start한 시점의 시간 저장
         uint people;
+        uint voteIdx;                     //해당 방의 투표 실행 횟수
     }
     
     struct Vote {
-        address owner;
+        uint votePeople;                        //투표자 수
+        uint cons;                          //반대 수
     }
     
     /*
@@ -41,7 +43,7 @@ contract ShareContract {
     */
     function createParty() public {
         require(getPartyIdx[msg.sender] == 0);
-        uint id = parties.push(Party(msg.sender, 0, 1)) - 1;
+        uint id = parties.push(Party(msg.sender, 0, 1, 0)) - 1;
         getPartyIdx[msg.sender] = id;
         isRefunded[msg.sender] = true;
         totalPartyNumber++;
@@ -69,6 +71,7 @@ contract ShareContract {
     **          참여한 파티 인덱스 매핑 후 본인까지 4명이 되면 다음 빈 방을 가르키도록 함.
     */
     function joinParty() public payable {
+        require(msg.value >= value);
         require(getBalancePartyone() >= value);
         getPartyIdx[msg.sender] = emptyPartyIdx;
         isRefunded[msg.sender] = false;
@@ -222,51 +225,63 @@ contract ShareContract {
         return true;
     }
     
-    /* createVote() 함수
-    ** 인자 :   x
-    ** 반환값 : x
-    ** 설명 :   누군가 이 함수를 실행하면(투표 제기) 나머지 사람들에게 투표하라는 알림보냄.
-    **          변수 값을 초기화.
+    /*
+    ** createVote() 함수
+    ** 인자:    x
+    ** 반환값:  x
+    ** 설명: 투표를 생성하는 함수. 누군가 생성하면 알림보내는 기능 만들어야함. 총 투표와 파티당 투표횟수를 세줌.
     */
+    
     function createVote() public {
-        voteCount = 0;                     //투표한 사람 수
-        cons = 0;                          //방 폭파 찬성표 개수
-        startVote = now;                   //투표 시작 시간
-        canRefund = false;
+        Votes.push(Vote(0,0));
+        uint id = getPartyIdx[msg.sender];
+        parties[id].voteIdx++;
+        totalVote++;
     }
     
     /*
-    ** vote() 함수
-    ** 인자 :   bool(방 폭파 찬성 1, 반대 0)
-    ** 반환값:  x  
-    ** 설명 :   방 폭파 반대 수와 총 투표 수를 기록. 4명 다 투표를 진행하면, voteResult 실행.
-    **          만약 투표자가 4명이 안될경우 3일 지나면 자동 voteResult 실행.
+    ** voting() 함수
+    ** 인자:    bool(폭파 찬성 = true, 폭파 반대 = false)
+    ** 반환값:  x
+    ** 설명:    사용자에게 폭파 찬성, 반대 값을 받음. 실행될때마다 voteCheck실행.
+    **          isVoted를 이용해 1번만 투표 가능하게 함. 반대표, 총 투표인원 세어줌.
     */
+    
     function voting(bool election) public {
-        //createVote가 실행될 때만 가능한 require 고민해보기
-        //한명이 여러번 투표 방지 고민해보기
+        uint id = getPartyIdx[msg.sender];
+        require(isVoted[msg.sender] == parties[id].voteIdx-1);
+        isVoted[msg.sender]++;
+        Votes[totalVote-1].votePeople++;
         if(election == false){
-            cons++;
+            Votes[totalVote-1].cons++;
         }
-        voteCount++;
-        if(voteCount == 3){
-            voteResult();
-        }
-        uint votingTime;
-        votingTime = now - startVote;
-        if(votingTime >= 3 days){
+        voteCheck();
+    }   
+    
+    /*
+    ** voteCheck() 함수
+    ** 인자:    x
+    ** 반환값:  x
+    ** 설명:    만약 4명 모두 투표하면 voteResult실행.
+    */
+    
+    function voteCheck() internal {
+        if(Votes[totalVote-1].votePeople == 4){
             voteResult();
         }
     }
     
     /*
     ** voteResult() 함수
-    ** 인자 :   x
-    ** 반환값:  x  
-    ** 설명 :   투표 결과, 반대표가 없으면 환불 가능.
+    ** 인자:    x
+    ** 반환값:  x
+    ** 설명:    만약 반대표가 없으면 환불이 가능하게 canRefund를 true로 만듦.
     */
-    function voteResult() private{
-        if(cons != 0){
+    
+    function voteResult() public {
+        if(Votes[totalVote-1].cons == 0){
             canRefund = true;
         }
     }
+    
+}
