@@ -31,61 +31,6 @@ class Cover extends React.Component{
 		});
 	}
 
-	/*
-	_openModal2 = function() {
-		this.setState({
-			visible2 : true
-		});
-	}
-
-	_closeModal2 = function() {
-		this.setState({
-			visible2 : false
-		});
-	}
-
-	_closeModalAndAlert = function() {
-		this.setState({
-			visible2 : false
-		});
-		alert('회원가입 완료! 로그인해주세요!');
-	}
-	*/
-
-	// useInterval(){
-	//     setInterval(() => {
-	//         var i = 0;
-	//         var textList = [
-	//             "계정공유를 안전하고 편리하게",
-	//             "자동 매칭 시스템으로 계정 공유 상대를 찾는 수고로움을 덜어줍니다.",
-	//             "블록체인을 활용한 스마트 컨트랙트로 안전하고 수수료가 적은 결제시스템을 제공합니다."
-	//         ]
-	//         if(i === 0)
-	//         {
-	//             this.setState({
-	//                 text: textList[1]
-	//             })
-	//             i++;
-	//         }
-	//         else if(i === 1)
-	//         {
-	//             this.setState({
-	//                 text: textList[2]
-	//             })
-	//             i++;
-	//         }
-	//         else if(i === 2)
-	//         {
-	//             this.setState({
-	//                 text: textList[0]
-	//             })
-	//             i = 0;
-	//         }
-			
-			
-	//     }, 5000);
-	// } 
-
 	componentDidMount(){
 		var i = 0;
 		var textList = [

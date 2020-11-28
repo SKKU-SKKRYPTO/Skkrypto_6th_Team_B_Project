@@ -224,8 +224,8 @@ class LoginForm extends React.Component {
           <p className="Auth__keystoreMsg">{keystoreMsg}</p>
           <p className="Auth__toggleAccessButton" onClick={this.toggleAccessType}>
             {accessType === 'privateKey'
-              ? 'Want to login with keystore? (click)'
-              : 'Want to login with privatekey? (click)'
+              ? 'Keystore 파일로 로그인하시겠어요? (click)'
+              : 'Privatekey로 로그인하시겠어요? (click)'
             }
           </p>
         </Fragment>

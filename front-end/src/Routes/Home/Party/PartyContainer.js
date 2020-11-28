@@ -35,7 +35,7 @@ class ShareContract extends React.Component {
 		// ex:) this.countContract.methods.count().call()
 		// promise를 반환하니까, .then()이나 async-await 써라
 		const participant = await this.shareContract.methods.getParticipant().call();
-		this.setState({participant})
+		this.setState({participant});
 	}
 
 	render() {
