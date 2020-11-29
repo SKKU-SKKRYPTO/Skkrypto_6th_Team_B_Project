@@ -74,6 +74,7 @@ contract ShareContract {
         require(msg.value >= value);
         require(getBalancePartyone() >= value);
         getPartyIdx[msg.sender] = emptyPartyIdx;
+        require(msg.sender != parties[emptyPartyIdx].owner);
         isRefunded[msg.sender] = false;
         parties[emptyPartyIdx].people++;
         if(parties[emptyPartyIdx].people == 4)
@@ -109,17 +110,19 @@ contract ShareContract {
     }
 
     /*
-    ** startParty() 제어자
-    ** 조건:    1. 계약 시작 이후 30일이 경과하지 않아야 함.
-    **          2. 이전에 환불을 받은 적이 없어야 함.
-    **          3. 파티장이 아니어야 함.
-    **          4. 투표 결과 환불 대상자여야 함.
+    ** refundable() 제어자
+    ** 조건:    1. startTime이 0이 아니어야 함.(startParty가 시행되지 않았을 경우를 방지)
+    **          2. 계약 시작 이후 30일이 경과하지 않아야 함.
+    **          3. 이전에 환불을 받은 적이 없어야 함.
+    **          4. 파티장이 아니어야 함.
+    **          5. 투표 결과 환불 대상자여야 함.
     ** 설명:    계약 위반으로 파티가 조기 종료되는 경우,
     **          환불을 받을 조건을 명시.
     */
     modifier refundable() {
         uint senderPartyIdx = getPartyIdx[msg.sender];
         uint normalDays = now - parties[senderPartyIdx].startTime;
+        require(parties[senderPartyIdx].startTime != 0);
         require(normalDays < 30 days);
         require(isRefunded[msg.sender] == false);
         require(canRefund == true);
@@ -161,7 +164,6 @@ contract ShareContract {
     ** 인자:    x
     ** 반환값:  x
     ** 설명: 파티가 조기종료된 경우, 진행된 날짜만큼의 금액을 방장이 인출할 수 있게하는 함수
-    **       파티가 조기종료된 원인이 방장이 아닐 경우에만 실행가능
     **       여기서 now는 조기 종료된 시점이어야하므로 조기 종료되었을 때 해당 함수를 바로 실행해야함
     */
     function withdrawBreakParty() public {
@@ -252,6 +254,7 @@ contract ShareContract {
         require(isVoted[msg.sender] == parties[id].voteIdx-1);
         isVoted[msg.sender]++;
         Votes[totalVote-1].votePeople++;
+        canRefund = false;
         if(election == false){
             Votes[totalVote-1].cons++;
         }
@@ -278,10 +281,9 @@ contract ShareContract {
     ** 설명:    만약 반대표가 없으면 환불이 가능하게 canRefund를 true로 만듦.
     */
     
-    function voteResult() public {
+    function voteResult() internal {
         if(Votes[totalVote-1].cons == 0){
             canRefund = true;
         }
     }
-    
 }
