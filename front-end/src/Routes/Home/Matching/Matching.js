@@ -33,7 +33,7 @@ class Matching extends React.Component{
     createParty = async() => {
         console.log(this.state.msg_sender); // 주소확인용 (test)
 
-        this.shareContract.methods.createParty().send({
+        this.shareContract.methods.createParty("bestowing@naver.com", "1234").send({
             from: this.state.msg_sender,
             gas: '250000',
             value: 0
