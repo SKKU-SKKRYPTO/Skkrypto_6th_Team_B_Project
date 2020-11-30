@@ -23,21 +23,7 @@ class Matching extends React.Component{
         }
     }
 
-    getParticipant = async() => {
-        const count = await this.shareContract.methods.getParticipant().call({
-            from: this.state.msg_sender
-        });
-		this.setState({participant: count})
-    }
-
-    getIdx = async() => {
-        const partyIdx = await this.shareContract.methods.getIdx().call({
-            from: this.state.msg_sender
-        });
-		this.setState({idx: partyIdx})
-    }
-
-    // 현재 로그인된 계정 정보불러오기?
+    // 현재 로그인된 계정 정보불러오기
     getWallet = function() {
         if (caver.klay.accounts.wallet.length) {
             return caver.klay.accounts.wallet[0];
@@ -83,7 +69,7 @@ class Matching extends React.Component{
                 alert("매칭 성공! 마이페이지에서 확인하세요.");
             })
             .then('receipt', (receipt) => {
-                console.log("test");
+                console.log(receipt);
                 if(receipt.status) {
                     alert("매칭 성공! 마이페이지에서 확인하세요.");
                 } else {
@@ -113,25 +99,12 @@ class Matching extends React.Component{
         })
     }
 
-    // testaccount = function() {
-    //     console.log(`ID: ${this.state.account_id}`);
-    //     console.log(`PW: ${this.state.account_pw}`);
-    //     this._closeModal();
-    // }
     
     render(){
         
         return(
             <>
             <div>
-                {/* <div>
-					<button onClick={this.getParticipant}>방 확인</button>
-					{this.state.participant}
-				</div>
-                <div>
-					<button onClick={this.getIdx}>인덱스 확인</button>
-					{this.state.idx}
-				</div> */}
                 <div className="matching-wrap">
                     <div className="matching-container">
                         <div className="Party-owner">

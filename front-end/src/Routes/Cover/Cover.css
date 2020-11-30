@@ -107,6 +107,10 @@
     margin: 0 50px;
 }
 
+.login-input .Auth__toggleAccessButton{
+    cursor: pointer;
+}
+
 .login-input p{
     font-weight: 600;
     font-size: 20px;
@@ -241,6 +245,7 @@
     font-size: 18px;
     margin: 10px;
     border: none;
+    cursor: pointer;
 }
 
 .signinLogo{
