@@ -87,12 +87,101 @@
     transition:800ms ease all;
 }
 
-
-
-/* .Party-owner {
-    
+/*modal*/
+.account-modal-container {
+    display: grid;
+    grid-template-rows: 3;
 }
 
-.Party-member {
+.account-modalHeader {
+    display: flex;
+}
 
-} */
+.account-Logo {
+    width: 250px;
+    height: 250px;
+    padding-left: 50px;
+}
+
+.account-closeButton{
+    position: relative;
+    top: 35px;
+    left: 400px;
+    width: 35px;
+    height: 35px;
+}
+
+.account-modalHeader h2 {
+    position: relative;
+    top: 202px;
+    left: 93px;
+    margin: 0;
+    font-size: 20px;
+}
+
+.account-input{
+    position: relative;
+    display: grid;
+    grid-template-rows: 2;
+    width: 500px;
+    padding: 0 250px;
+}
+
+.account-email,
+.account-password {
+    display: flex;
+    padding-bottom: 15px;
+    align-items: center;
+}
+
+.account-input label {
+    font-weight: 600;
+    font-size: 20px;
+    flex: 1;
+    text-align: left;
+}
+
+.account-input input {
+    padding: 5px;
+}
+
+
+.account-input-email,
+.account-input-password {
+    background-color: #F4F5F7;
+    width: 280px;
+    height: 48px;
+    border: none;
+    outline-style: none;
+}
+
+.create-party-add-account {
+    position: relative;
+    width: 200px;
+    height: 65px;
+    text-align: center;
+    left: 400px;
+    /* background-color: #FF166B; */
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+
+    margin-top: 10px;
+}
+
+.create-party-button {
+    background-color: #FF166B;
+    border: none;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    text-decoration: none;
+    padding: 20px;
+    color: black;
+    cursor: pointer;
+    width: 200px;
+    border-radius: 10px;
+}
