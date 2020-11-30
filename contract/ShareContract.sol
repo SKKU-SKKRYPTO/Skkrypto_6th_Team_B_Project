@@ -6,7 +6,7 @@ contract ShareContract {
     // 컨트랙트 배포자
     constructor() public {
         owner = msg.sender;
-        parties.push(Party(msg.sender, 0, 4, 0));
+        parties.push(Party(msg.sender, 0, 4, 0, false, "a", "a"));
     }
 
     Party[] internal parties;
@@ -28,6 +28,9 @@ contract ShareContract {
         uint startTime;                     // 방장이 start한 시점의 시간 저장
         uint people;
         uint voteIdx;                     //해당 방의 투표 실행 횟수
+        bool isVoting;
+        string accountId;
+        string accountPassword;
     }
     
     struct Vote {
@@ -41,13 +44,19 @@ contract ShareContract {
     ** 반환값:  x
     ** 설명:    방을 새로 만드는 함수. msg.sender가 새로운 방의 owner가 된다.
     */
-    function createParty() public {
+    function createParty(string memory accountId,string memory accountPassword) public {
         require(getPartyIdx[msg.sender] == 0);
-        uint id = parties.push(Party(msg.sender, 0, 1, 0)) - 1;
+        uint id = parties.push(Party(msg.sender, 0, 1, 0, false, accountId, accountPassword)) - 1;
         getPartyIdx[msg.sender] = id;
         isRefunded[msg.sender] = true;
         totalPartyNumber++;
         isEmptyParty = true;
+    }
+
+    function returnAccount() public view returns (string memory, string memory) {
+        string memory ID = parties[getPartyIdx[msg.sender]].accountId;
+        string memory PW = parties[getPartyIdx[msg.sender]].accountPassword;
+        return (ID, PW);
     }
 
     /* 
@@ -71,6 +80,7 @@ contract ShareContract {
     **          참여한 파티 인덱스 매핑 후 본인까지 4명이 되면 다음 빈 방을 가르키도록 함.
     */
     function joinParty() public payable {
+        require(getPartyIdx[msg.sender] == 0);
         require(msg.value >= value);
         require(getBalancePartyone() >= value);
         getPartyIdx[msg.sender] = emptyPartyIdx;
@@ -211,7 +221,7 @@ contract ShareContract {
     ** 반환값:  계정 잔액
     ** 설명: 함수를 호출한 계정의 잔액 반환
     */
-    function getBalancePartyone() internal view returns (uint) {
+    function getBalancePartyone() public view returns (uint) {
         return address(msg.sender).balance;
     }
 
@@ -235,10 +245,12 @@ contract ShareContract {
     */
     
     function createVote() public {
-        Votes.push(Vote(0,0));
         uint id = getPartyIdx[msg.sender];
+        Votes.push(Vote(0,0));
         parties[id].voteIdx++;
         totalVote++;
+        canRefund = false;
+        parties[id].isVoting = true;
     }
     
     /*
@@ -254,7 +266,6 @@ contract ShareContract {
         require(isVoted[msg.sender] == parties[id].voteIdx-1);
         isVoted[msg.sender]++;
         Votes[totalVote-1].votePeople++;
-        canRefund = false;
         if(election == false){
             Votes[totalVote-1].cons++;
         }
@@ -270,6 +281,7 @@ contract ShareContract {
     
     function voteCheck() internal {
         if(Votes[totalVote-1].votePeople == 4){
+            parties[getPartyIdx[msg.sender]].isVoting = false;
             voteResult();
         }
     }
@@ -282,8 +294,11 @@ contract ShareContract {
     */
     
     function voteResult() internal {
-        if(Votes[totalVote-1].cons == 0){
+        if(Votes[totalVote-1].cons <= 1){
             canRefund = true;
         }
     }
-}
+    
+    function isVoteCheck() public view returns (bool){
+        return parties[getPartyIdx[msg.sender]].isVoting;
+    }
