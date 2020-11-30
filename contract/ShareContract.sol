@@ -37,6 +37,21 @@ contract ShareContract {
         uint votePeople;                        //투표자 수
         uint cons;                          //반대 수
     }
+
+    /*
+    ** getMyPartyInfo() 함수
+    ** 인자:    x
+    ** 반환값:  내가 참여한 파티에 관한 정보
+    **          uint: 참여한 파티의 인덱스
+    **          bool: 내가 방장인지
+    **          uint: 파티 시작 시각
+    **          uint: 파티 참여 인원
+    */
+    function getPartyInfo() public view returns (uint, bool, uint, uint) {
+        uint id = getPartyIdx[msg.sender];
+        Party memory party = parties[id];
+        return (id, party.owner == msg.sender, party.startTime, party.people);
+    }
     
     /*
     ** createParty() 함수
