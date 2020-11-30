@@ -78,8 +78,7 @@ class PartyInfo extends React.Component {
 	async componentDidMount() {
 		try {
 			const party = await this.shareContract.methods.getPartyInfo().call({ from: this.walletAddress });
-			console.log(party);
-			if (party[0] === '0' || (party[2] === '0' && party[1] === false)) {
+			if (party[0] === '0' || (party[3] === '0' && party[1] === false)) {
 				// 참여한 파티가 없거나 아직 시작하지 않았는데 방장이 아닐경우
 				this.setState({
 					accountId: "등록된 계정이 없어요",

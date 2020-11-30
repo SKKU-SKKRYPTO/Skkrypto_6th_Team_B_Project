@@ -36,6 +36,18 @@ const Button = styled.button`
 	border-radius: 10px;
 `;
 
+const CenterButton = styled.button`
+	font-size: 20px;
+	padding: 15px 45px;
+	margin: 10px auto;
+	background-color: #FF166B;
+	border: 0px;
+	box-shadow: 1px 3px 2px gray;
+	font-weight: bold;
+	display: block;
+	border-radius: 10px;
+`;
+
 const OwnerContent = styled.div`
 	
 `;
@@ -67,6 +79,16 @@ const Notion = styled.span`
 	display: block;
 `;
 
+const FlexWrapper = styled.div`
+	margin: 0 5px;
+	padding: 30px;
+	border-radius: 25px;
+	background-color: #FAFAFA;
+	border: 0px;
+    box-shadow: 1px 3px 2px gray;
+	text-align: center;
+`;
+
 const Wrapper = styled.div`
 	margin: 0 5px;
 	padding: 30px;
@@ -82,6 +104,16 @@ const Container = styled.div`
 	display: flex;
 	justify-content: center;
 	padding: 50px 0 0 0;
+`;
+
+const VoteContent = styled.div`
+	margin: 0 5px;
+	padding: 30px;
+	border-radius: 25px;
+	background-color: #FAFAFA;
+	border: 0px;
+    box-shadow: 1px 3px 2px gray;
+	text-align: center;
 `;
 
 const VoteWrapper = styled.div`
@@ -166,16 +198,41 @@ const User = ({num, error, user}) => {
 	)
 }
 
-const CurrentVote = ({vote}) => {
+const CurrentVote = ({votingYes, votingNo, votePeople, cons, createVote}) => {
 	return (
-		<VoteWrapper>
-			<div>
-				현재 투표
-			</div>
-			<Wrapper>
-				참여 현황: {vote}
-			</Wrapper>
-		</VoteWrapper>
+		votePeople !== 0 ? (
+			<VoteWrapper>
+				<Notion>
+					현재 투표
+				</Notion>
+				<VoteContent>
+					<Notion>
+						투표 현황: {votePeople}명 참가
+					</Notion>
+					<Notion>
+						반대 인원: {cons}명
+					</Notion>
+					<CenterButton onClick={votingYes}>
+						찬성 투표
+					</CenterButton>
+					<CenterButton onClick={votingNo}>
+						반대 투표
+					</CenterButton>
+					{
+						
+					}
+				</VoteContent>
+			</VoteWrapper>
+			) : <VoteWrapper>
+				<Notion>
+					<Wrapper>
+						진행중인 투표가 없어요.
+						<Button onClick={createVote}>
+							투표 만들기
+						</Button>
+					</Wrapper>
+				</Notion>
+			</VoteWrapper>
 	)
 }
 
@@ -189,26 +246,33 @@ class PartyContainer extends React.Component {
 		this.state = {
 			isValid: false,
 			isOwner: false,
+			isBreak: false,
 			startTime: '',
-			people: '',
-			vote: '',
-			cons: '',
+			endTime: '',
+			people: 0,
+			votePeople: 0,
+			cons: 0,
+			reason: '',
 			loading: true,
 			error: null,
 			isPartyPage: true
 		};
-		//this.transfer = this.transfer.bind(this);
 		this.getPartyOut = this.getPartyOut.bind(this);
 		this.startParty = this.startParty.bind(this);
 		this.openVotePage = this.openVotePage.bind(this);
+		this.createVote = this.createVote.bind(this);
+		this.votingYes = this.votingYes.bind(this);
+		this.votingNo = this.votingNo.bind(this);
+		this.withdrawBreakParty = this.withdrawBreakParty.bind(this);
+		this.breakUpParty = this.breakUpParty.bind(this);
 	}
 
 	async componentDidMount() {
 		try {
 			const party = await this.shareContract.methods.getPartyInfo().call({ from: this.walletAddress });
 			const isValid = party[0] !== "0" ? true : false;
-			this.setState({ isValid: isValid, isOwner: party[1], startTime: parseInt(party[2]), people: parseInt(party[3]), vote: parseInt(party[4]), cons: parseInt(party[5]) });
-			console.log(party);
+			this.setState({ isValid: isValid, isOwner: party[1], isBreak: party[2], startTime: parseInt(party[3]),
+				endTime: parseInt(party[4]), people: parseInt(party[5]), votePeople: parseInt(party[6]), cons: parseInt(party[7]), reason: party[8] });
 		} catch {
 			this.setState({
 				error: "클레이튼 노드와 통신중에 에러가 발생했어요."
@@ -217,18 +281,6 @@ class PartyContainer extends React.Component {
 			this.setState({ loading:false });
 		}
 	}
-
-	/*
-	async transfer() {
-		try {
-			const result = await this.shareContract.methods.getPartyInfo().call({ from: this.walletAddress });
-		} catch {
-			alert("송금에 실패했어요. 잔액을 확인해주세요.");
-		} finally {
-			console.log("transfer 실행");
-		}
-	}
-	*/
 
 	openVotePage() {
 		this.setState({ isPartyPage:false });
@@ -258,8 +310,68 @@ class PartyContainer extends React.Component {
 		}
 	}
 
+	async createVote() {
+		try {
+			await this.shareContract.methods.createVote("계정 정보가 일치하지 않다고 나옵니다.").send({ from: this.walletAddress, gas: '200000' });
+			alert("투표를 시작했어요.");
+		} catch {
+			alert("투표를 시작하지 못했어요.");
+		}
+	}
+
+	async votingYes() {
+		try {
+			await this.shareContract.methods.voting(true).send({ from: this.walletAddress, gas: '200000' });
+			this.setState({ votePeople: this.state.votePeople + 1 });
+			alert("투표했어요.");
+		} catch {
+			alert("문제가 생겨서 투표하지 못했어요😥");
+		}
+	}
+
+	async votingNo() {
+		try {
+			await this.shareContract.methods.voting(false).send({ from: this.walletAddress, gas: '200000' });
+			this.setState({ votePeople: this.state.votePeople + 1, cons: this.state.cons + 1 });
+			alert("투표했어요.");
+		} catch {
+			alert("문제가 생겨서 투표하지 못했어요😥");
+		}
+	}
+
+	async withdrawBreakParty() {
+		try {
+			await this.shareContract.methods.withdrawBreakParty().send({ from: this.walletAddress, gas: '200000' });
+			alert("송금이 완료되었습니다.");
+		} catch {
+			alert("문제가 생겨서 송금하지 못했어요😥");
+		}
+	}
+
+	async breakUpParty() {
+		try {
+			await this.shareContract.methods.breakUpParty().send({ from: this.walletAddress, gas: '200000' });
+			alert("환불이 완료되었습니다.");
+		} catch {
+			alert("문제가 생겨서 환불하지 못했어요😥")
+		}
+	}
+
 	render() {
-		const { isValid, isOwner, startTime, people, vote, cons, loading, error, isPartyPage } = this.state;
+		const {
+			isValid,
+			isOwner,
+			isBreak,
+			startTime,
+			endTime,
+			people,
+			votePeople,
+			cons,
+			reason,
+			loading,
+			error,
+			isPartyPage
+		} = this.state;
 		const me = {curr: "매칭 검증"};
 
 		// startTime을 유저 친화적으로 변환
@@ -290,44 +402,74 @@ class PartyContainer extends React.Component {
 					isPartyPage ?
 					(
 						isValid ? (
-							<PresenterWrapper>
-								<Container>
-									<Owner error={error} isOwner={isOwner} getPartyOut={this.getPartyOut}/>
+							isBreak ? (
+								<PresenterWrapper>
+									<Container>
+										<FlexWrapper>
+											{
+												isOwner ? (
+													<>
+														<Notion>
+															투표 결과에 의해 파티가 폭파되었습니다. 아래 버튼을 눌러 송금받으세요.
+														</Notion>
+														<CenterButton onClick={this.withdrawBreakParty} >
+															송금하기
+														</CenterButton>
+													</>
+												) : (
+													<>
+														<Notion>
+															투표 결과에 의해 파티가 폭파되었습니다. 아래 버튼을 눌러 환불을 받으세요.
+														</Notion>
+														<CenterButton onClick={this.breakUpParty}>
+															환불받기
+														</CenterButton>
+													</>
+												)
+											}
+										</FlexWrapper>
+									</Container>
+								</PresenterWrapper>
+							) : (
+								<PresenterWrapper>
+									<Container>
+										<Owner error={error} isOwner={isOwner} getPartyOut={this.getPartyOut}/>
+										{
+											isOwner === false ?
+												<Me error={error} user={me} getPartyOut={this.getPartyOut} startTime={startTime} />
+											: null
+										}
+										<User num={1} error={error} user={participants[0]}/>
+										<User num={2} error={error} user={participants[1]}/>
+										{
+											isOwner === true ?
+												<User num={3} error={error} user={participants[2]}/>
+											: null
+										}
+									</Container>
 									{
-										isOwner === false ?
-											<Me error={error} user={me} getPartyOut={this.getPartyOut} startTime={startTime} />
-										: null
+										// 파티가 시작했으면 투표버튼 활성화
+										startTime !== 0 ?
+											<BottomButton onClick={this.openVotePage}>투표현황</BottomButton> :
+											people === 4 ?
+												<BottomButton onClick={this.startParty}>파티 시작</BottomButton> :
+												null
 									}
-									<User num={1} error={error} user={participants[0]}/>
-									<User num={2} error={error} user={participants[1]}/>
-									{
-										isOwner === true ?
-											<User num={3} error={error} user={participants[2]}/>
-										: null
-									}
-								</Container>
-								{
-									// 파티가 시작했으면 투표버튼 활성화
-									startTime !== 0 ?
-										<BottomButton onClick={this.openVotePage}>투표현황</BottomButton> :
-										people === 4 ?
-											<BottomButton onClick={this.startParty}>파티 시작</BottomButton> :
-											null
-								}
-							</PresenterWrapper>
+								</PresenterWrapper>
+							)
 						) :
 						<PresenterWrapper>
 							<Container>
-								<div>
+								<FlexWrapper>
 									참가중인 파티가 없어요.
-								</div>
+								</FlexWrapper>
 							</Container>
 						</PresenterWrapper>
 					) :
 					(
 						<PresenterWrapper>
 							<Container>
-								<CurrentVote vote={vote}/>
+								<CurrentVote votingYes={this.votingYes} votingNo={this.votingNo} votePeople={votePeople} cons={cons} createVote={this.createVote} />
 							</Container>
 						</PresenterWrapper>
 					)
