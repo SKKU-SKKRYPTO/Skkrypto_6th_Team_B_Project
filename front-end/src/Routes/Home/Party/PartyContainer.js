@@ -170,7 +170,7 @@ const Me = ({error, user, getPartyOut, startTime}) => {
 							<Notion>
 								{user.curr}
 							</Notion>
-							{user.curr === '매칭 검증' && startTime === 0 ? 
+							{user.curr === '매칭 검증' && startTime.getTime() === 0 ? 
 							(
 								<Button onClick={getPartyOut}>
 									매칭 취소
@@ -252,6 +252,7 @@ class PartyContainer extends React.Component {
 			isValid: false,
 			isOwner: false,
 			isBreak: false,
+			isFinish: false,
 			startTime: null,
 			endTime: null,
 			people: 0,
@@ -278,6 +279,11 @@ class PartyContainer extends React.Component {
 			const isValid = party[0] !== "0" ? true : false;
 			const startTime = new Date(parseInt(party[3]) * 1000);
 			const endTime = new Date(parseInt(party[4]) * 1000);
+			const now = new Date();
+			if (startTime.getTime() !== 0 && endTime < now) { // 파티원: 파티가 종료된 경우
+				this.setState({ isFinish: true });
+			} else
+				this.setState({ isFinish: false });
 			this.setState({ isValid: isValid, isOwner: party[1], isBreak: party[2], startTime: startTime,
 				endTime: endTime, people: parseInt(party[5]), votePeople: parseInt(party[6]), cons: parseInt(party[7]), reason: party[8] });
 		} catch {
@@ -369,6 +375,7 @@ class PartyContainer extends React.Component {
 			isValid,
 			isOwner,
 			isBreak,
+			isFinish,
 			startTime,
 			endTime,
 			people,
@@ -432,50 +439,56 @@ class PartyContainer extends React.Component {
 										</FlexWrapper>
 									</Container>
 								</PresenterWrapper>
-							) : (
-								<PresenterWrapper>
-									<Title>
-										공지사항
+							) :
+							(
+								isFinish ? (
+									<div>끝났어요</div>
+								) : (
+									<PresenterWrapper>
+										<Title>
+											공지사항
+											{
+												startTime.getTime() !== 0 ? <div>파티가 {(startTime.getMonth() + 1) + "월 " + startTime.getDate() + "일"}에 시작되어 {(endTime.getMonth() + 1) + "월 " + endTime.getDate() + "일"}에 끝나요.</div> : null
+											}
+											{
+												votePeople !== 0 ? <div>투표가 진행중이에요 !</div> : null
+											}
+										</Title>
+										<Container>
+											<Owner error={error} isOwner={isOwner} getPartyOut={this.getPartyOut}/>
+											{
+												isOwner === false ?
+													<Me error={error} user={me} getPartyOut={this.getPartyOut} startTime={startTime} />
+												: null
+											}
+											<User num={1} error={error} user={participants[0]}/>
+											<User num={2} error={error} user={participants[1]}/>
+											{
+												isOwner === true ?
+													<User num={3} error={error} user={participants[2]}/>
+												: null
+											}
+										</Container>
 										{
-											startTime !== null ? <div>파티가 {(startTime.getMonth() + 1) + "월 " + startTime.getDate() + "일"}에 시작되어 {(endTime.getMonth() + 1) + "월 " + endTime.getDate() + "일"}에 끝나요.</div> : null
+											// 파티가 시작했으면 투표버튼 활성화
+											startTime.getTime() !== 0 ?
+												<BottomButton onClick={this.openVotePage}>투표현황</BottomButton> :
+												people === 4 ?
+													<BottomButton onClick={this.startParty}>파티 시작</BottomButton> :
+													null
 										}
-										{
-											votePeople !== 0 ? <div>투표가 진행중이에요 !</div> : null
-										}
-									</Title>
-									<Container>
-										<Owner error={error} isOwner={isOwner} getPartyOut={this.getPartyOut}/>
-										{
-											isOwner === false ?
-												<Me error={error} user={me} getPartyOut={this.getPartyOut} startTime={startTime} />
-											: null
-										}
-										<User num={1} error={error} user={participants[0]}/>
-										<User num={2} error={error} user={participants[1]}/>
-										{
-											isOwner === true ?
-												<User num={3} error={error} user={participants[2]}/>
-											: null
-										}
-									</Container>
-									{
-										// 파티가 시작했으면 투표버튼 활성화
-										startTime !== 0 ?
-											<BottomButton onClick={this.openVotePage}>투표현황</BottomButton> :
-											people === 4 ?
-												<BottomButton onClick={this.startParty}>파티 시작</BottomButton> :
-												null
-									}
-								</PresenterWrapper>
+									</PresenterWrapper>
+								)
 							)
-						) :
-						<PresenterWrapper>
-							<Container>
-								<FlexWrapper>
-									참가중인 파티가 없어요.
-								</FlexWrapper>
-							</Container>
-						</PresenterWrapper>
+						) : (
+							<PresenterWrapper>
+								<Container>
+									<FlexWrapper>
+										참가중인 파티가 없어요.
+									</FlexWrapper>
+								</Container>
+							</PresenterWrapper>
+						)
 					) :
 					(
 						<PresenterWrapper>
