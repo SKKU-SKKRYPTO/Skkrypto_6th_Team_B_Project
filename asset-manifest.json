@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/Skkrypto_6th_Team_B_Project/static/css/main.ba1fd933.chunk.css",
+    "main.js": "/Skkrypto_6th_Team_B_Project/static/js/main.adab90e6.chunk.js",
+    "main.js.map": "/Skkrypto_6th_Team_B_Project/static/js/main.adab90e6.chunk.js.map",
+    "runtime-main.js": "/Skkrypto_6th_Team_B_Project/static/js/runtime-main.0efc3777.js",
+    "runtime-main.js.map": "/Skkrypto_6th_Team_B_Project/static/js/runtime-main.0efc3777.js.map",
+    "static/js/2.a7d2c679.chunk.js": "/Skkrypto_6th_Team_B_Project/static/js/2.a7d2c679.chunk.js",
+    "static/js/2.a7d2c679.chunk.js.map": "/Skkrypto_6th_Team_B_Project/static/js/2.a7d2c679.chunk.js.map",
+    "index.html": "/Skkrypto_6th_Team_B_Project/index.html",
+    "static/css/main.ba1fd933.chunk.css.map": "/Skkrypto_6th_Team_B_Project/static/css/main.ba1fd933.chunk.css.map",
+    "static/js/2.a7d2c679.chunk.js.LICENSE.txt": "/Skkrypto_6th_Team_B_Project/static/js/2.a7d2c679.chunk.js.LICENSE.txt",
+    "static/media/App.css": "/Skkrypto_6th_Team_B_Project/static/media/background.6e85d308.png",
+    "static/media/logo.0e9a7ada.png": "/Skkrypto_6th_Team_B_Project/static/media/logo.0e9a7ada.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.0efc3777.js",
+    "static/js/2.a7d2c679.chunk.js",
+    "static/css/main.ba1fd933.chunk.css",
+    "static/js/main.adab90e6.chunk.js"
+  ]
+}
