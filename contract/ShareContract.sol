@@ -270,7 +270,7 @@ contract ShareContract {
     ** 반환값:  x
     ** 설명: 투표를 생성하는 함수
     */
-    function createVote(string reason) public {
+    function createVote(string  memory reason) public {
         require(isVoted[msg.sender] == false);
         uint id = getPartyIdx[msg.sender];
         Party memory party = parties[id];

@@ -215,6 +215,7 @@ class LoginForm extends React.Component {
                   className="Auth__input"
                   name="privateKey"
                   onChange={this.handleChange}
+                  autocomplete="off"
                 />
               </Fragment>
             )

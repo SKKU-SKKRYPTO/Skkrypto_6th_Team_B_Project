@@ -126,7 +126,7 @@ class Matching extends React.Component{
                                     <div className="account-input">
                                         <div className="account-email">
                                             <label  className="account-input-label">넷플릭스 이메일: </label>
-                                            <input className="account-input-email" name="account_id" onChange={this.handleChange} />
+                                            <input className="account-input-email" name="account_id" onChange={this.handleChange} autocomplete="off"/>
                                         </div>
                                         <div className="account-password">
                                             <label className="account-input-label">넷플릭스 비밀번호: </label>
