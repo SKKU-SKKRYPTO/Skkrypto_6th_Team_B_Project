@@ -41,18 +41,24 @@ contract ShareContract {
     ** getMyPartyInfo() 함수
     ** 인자:    x
     ** 반환값:  내가 참여한 파티에 관한 정보
-    **          uint: 참여한 파티의 인덱스
-    **          bool: 내가 방장인지
-    **          uint: 파티 시작 시각
-    **          uint: 파티 종료 시각 (투표로 인한 종료도 포함)
-    **          uint: 파티 참여 인원
-    **          uint: 투표 참여 인원
-    **          uint: 반대 투표 개수
+    **          uint:   참여한 파티의 인덱스  (0이면 없는 것)
+    **          bool:   내가 방장인지
+    **          bool:   파티가 투표에 의해 종료되었는지
+    **          uint:   파티 시작 시각
+    **          uint:   파티 종료 시각 (투표로 인해 조기 종료 가능)
+    **          uint:   파티 참여 인원
+    **          uint:   투표 참여 인원
+    **          uint:   반대 투표 개수
+    **          string: 투표 이유
+    **          bool:   내가 투표를 했는지
     */
-    function getPartyInfo() public view returns (uint, bool, bool, uint, uint, uint, uint, uint, string memory) {
+    function getPartyInfo() public view returns (uint, bool, bool, uint, uint, uint, uint, uint, string memory, bool) {
         uint id = getPartyIdx[msg.sender];
         Party memory party = parties[id];
-        return (id, party.owner == msg.sender, party.isBreak, party.startTime, party.endTime, party.people, party.vote.votePeople, party.vote.cons, party.vote.reason);
+        return (id, party.owner == msg.sender,
+            party.isBreak, party.startTime, party.endTime,
+            party.people, party.vote.votePeople, party.vote.cons,
+            party.vote.reason, isVoted[msg.sender]);
     }
 
     /*

@@ -7,6 +7,8 @@ import styled from 'styled-components';
 import Message from 'Components/Message';
 import Loader from 'Components/Loader';
 import Modal from 'react-awesome-modal';
+import logo from "Images/logo.png";
+import closeButton from "Images/closeButton.png";
 
 const PresenterWrapper = styled.div`
 	text-align: center;
@@ -135,6 +137,98 @@ const Input = styled.input`
 	background-color: #F4F5F7;
 `;
 
+/*modal*/
+const ModalContainer = styled.div`
+	display: grid;
+    grid-template-rows: 3;
+`
+
+const ModalHeader = styled.div`
+	display: flex;
+`;
+
+const ModalLogo = styled.img`
+	width: 250px;
+    height: 250px;
+    padding-left: 50px;
+`;
+
+const ModalCloseButton = styled.img`
+	position: relative;
+    top: 35px;
+    left: 400px;
+    width: 35px;
+    height: 35px;
+`;
+
+const ModalHeaderH2 = styled.h2`
+	position: relative;
+    top: 202px;
+    left: 93px;
+    margin: 0;
+    font-size: 20px;
+`;    
+
+const ModalInput = styled.div`
+	position: relative;
+    display: grid;
+    grid-template-rows: 2;
+    width: 500px;
+    padding: 0 250px;
+`;
+
+const ModalReason = styled.div`
+	display: flex;
+    padding-bottom: 15px;
+    align-items: center;
+`;
+
+const ModalInputLabel = styled.label`
+	font-weight: 600;
+    font-size: 20px;
+    flex: 1;
+    text-align: left;
+`;
+
+const ModalInputReason = styled.input`
+	background-color: #F4F5F7;
+    width: 280px;
+    height: 48px;
+    border: none;
+    outline-style: none;
+`;
+
+const CreateVote = styled.div`
+	position: relative;
+    width: 200px;
+    height: 65px;
+    text-align: center;
+    left: 400px;
+    /* background-color: #FF166B; */
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+
+    margin-top: 10px;
+`;
+
+const CreateVoteButton = styled.button`
+	background-color: #FF166B;
+    border: none;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    text-decoration: none;
+    padding: 20px;
+    color: black;
+    cursor: pointer;
+    width: 200px;
+    border-radius: 10px;
+`;
+
 const Owner = ({error, isOwner, getPartyOut}) => {
 	return (
 		<Wrapper>
@@ -203,44 +297,6 @@ const User = ({num, error, user}) => {
 	)
 }
 
-const CurrentVote = ({votingYes, votingNo, votePeople, cons, createVote}) => {
-	return (
-		votePeople !== 0 ? (
-			<VoteWrapper>
-				<Notion>
-					현재 투표
-				</Notion>
-				<VoteContent>
-					<Notion>
-						투표 현황: {votePeople}명 참가
-					</Notion>
-					<Notion>
-						반대 인원: {cons}명
-					</Notion>
-					<CenterButton onClick={votingYes}>
-						찬성 투표
-					</CenterButton>
-					<CenterButton onClick={votingNo}>
-						반대 투표
-					</CenterButton>
-					{
-						
-					}
-				</VoteContent>
-			</VoteWrapper>
-		) : <VoteWrapper>
-			<Notion>
-				<Wrapper>
-					진행중인 투표가 없어요.
-					<Button onClick={createVote}>
-						투표 만들기
-					</Button>
-				</Wrapper>
-			</Notion>
-		</VoteWrapper>
-	)
-}
-
 class PartyContainer extends React.Component {
 	constructor(props) {
 		super(props);
@@ -259,13 +315,18 @@ class PartyContainer extends React.Component {
 			votePeople: 0,
 			cons: 0,
 			reason: '',
+			isVoted: false,
 			loading: true,
 			error: null,
-			isPartyPage: true
+			isPartyPage: true,
+			isModalVisible: false
 		};
 		this.getPartyOut = this.getPartyOut.bind(this);
 		this.startParty = this.startParty.bind(this);
 		this.openVotePage = this.openVotePage.bind(this);
+		this._openModal = this._openModal.bind(this);
+		this._closeModal = this._closeModal.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 		this.createVote = this.createVote.bind(this);
 		this.votingYes = this.votingYes.bind(this);
 		this.votingNo = this.votingNo.bind(this);
@@ -285,7 +346,8 @@ class PartyContainer extends React.Component {
 			} else
 				this.setState({ isFinish: false });
 			this.setState({ isValid: isValid, isOwner: party[1], isBreak: party[2], startTime: startTime,
-				endTime: endTime, people: parseInt(party[5]), votePeople: parseInt(party[6]), cons: parseInt(party[7]), reason: party[8] });
+				endTime: endTime, people: parseInt(party[5]), votePeople: parseInt(party[6]),
+				cons: parseInt(party[7]), reason: party[8], isVoted: party[9] });
 		} catch {
 			this.setState({
 				error: "클레이튼 노드와 통신중에 에러가 발생했어요."
@@ -297,6 +359,20 @@ class PartyContainer extends React.Component {
 
 	openVotePage() {
 		this.setState({ isPartyPage:false });
+	}
+
+	_openModal() {
+		this.setState({ isModalVisible: true });
+	}
+
+	_closeModal() {
+		this.setState({ isModalVisible: false });
+	}
+
+	handleChange = (e) => {
+		this.setState({
+			[e.target.name] : e.target.value,
+		})
 	}
 	
 	async startParty() {
@@ -325,7 +401,7 @@ class PartyContainer extends React.Component {
 
 	async createVote() {
 		try {
-			await this.shareContract.methods.createVote("계정 정보가 일치하지 않다고 나옵니다.").send({ from: this.walletAddress, gas: '200000' });
+			await this.shareContract.methods.createVote(this.state.reason).send({ from: this.walletAddress, gas: '200000' });
 			alert("투표를 시작했어요.");
 		} catch {
 			alert("투표를 시작하지 못했어요.");
@@ -382,9 +458,11 @@ class PartyContainer extends React.Component {
 			votePeople,
 			cons,
 			reason,
+			isVoted,
 			loading,
 			error,
-			isPartyPage
+			isPartyPage,
+			isModalVisible
 		} = this.state;
 		const me = {curr: "매칭 검증"};
 
@@ -451,7 +529,11 @@ class PartyContainer extends React.Component {
 												startTime.getTime() !== 0 ? <div>파티가 {(startTime.getMonth() + 1) + "월 " + startTime.getDate() + "일"}에 시작되어 {(endTime.getMonth() + 1) + "월 " + endTime.getDate() + "일"}에 끝나요.</div> : null
 											}
 											{
-												votePeople !== 0 ? <div>투표가 진행중이에요 !</div> : null
+												votePeople !== 0 ?
+													votePeople !== 4 ?
+														<div>투표가 진행중이에요 !</div>
+													: <div>투표가 종료되었어요 ! 반대가 많아 폭파되지 않았어요</div>
+												: null
 											}
 										</Title>
 										<Container>
@@ -493,7 +575,76 @@ class PartyContainer extends React.Component {
 					(
 						<PresenterWrapper>
 							<Container>
-								<CurrentVote votingYes={this.votingYes} votingNo={this.votingNo} votePeople={votePeople} cons={cons} createVote={this.createVote} />
+								{ votePeople !== 0 ? (
+									<VoteWrapper>
+										<Notion>
+											현재 투표
+										</Notion>
+										<VoteContent>
+											<Notion>
+												투표 현황: {votePeople}명 참가
+											</Notion>
+											<Notion>
+												투표 사유: {reason}
+											</Notion>
+											<Notion>
+												반대 인원: {cons}명
+											</Notion>
+											{
+												isVoted ? (
+													votePeople === 4 && cons >= 2 ?
+													<CenterButton onClick={() => { alert("재투표는 현재 버전에서 불가능해요. 신중하게 했어야죠😝"); }}>
+														투표 다시 만들기
+													</CenterButton> :
+													<Notion>
+														투표를 이미 진행했어요
+													</Notion>
+												) : (
+													<>
+														<CenterButton onClick={this.votingYes}>
+															찬성 투표
+														</CenterButton>
+														<CenterButton onClick={this.votingNo}>
+															반대 투표
+														</CenterButton>
+													</>
+												)
+											}
+										</VoteContent>
+									</VoteWrapper>
+									) : <VoteWrapper>
+										<Notion>
+											<Wrapper>
+												진행중인 투표가 없어요.
+												<Button onClick={() => this._openModal()}>
+													투표 만들기
+												</Button>
+												<Modal className="account-modal"
+													visible={isModalVisible}
+													width="1000" height="500"
+													effect="fadeInUp"
+													onClickAway = {() => this._closeModal()}>
+													<ModalContainer>
+														<ModalHeader>
+															<ModalLogo src={logo} alt="로그인 폼의 로고 이미지"/>
+															<ModalHeaderH2>투표 이유 입력</ModalHeaderH2>
+															<ModalCloseButton src={closeButton} onClick={()=>this._closeModal()} alt="닫기 버튼"/>
+														</ModalHeader>
+														<ModalInput>
+															<ModalReason>
+																<ModalInputLabel>투표 사유 </ModalInputLabel>
+																<ModalInputReason type="text" name="reason" onChange={this.handleChange}/>
+															</ModalReason>
+														</ModalInput>
+														<CreateVote>
+															<CreateVoteButton onClick={this.createVote}>투표 시작</CreateVoteButton>
+														</CreateVote>
+													</ModalContainer>
+												</Modal>
+											</Wrapper>
+										</Notion>
+									</VoteWrapper>
+								}
 							</Container>
 						</PresenterWrapper>
 					)
