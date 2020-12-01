@@ -6,38 +6,37 @@ contract ShareContract {
     // 컨트랙트 배포자
     constructor() public {
         owner = msg.sender;
-        parties.push(Party(msg.sender, 0, 4, 0, false, "a", "a"));
+        parties.push(Party(msg.sender, 0, 0, 4, "a", "a", false, Vote(0, 0, "")));
     }
 
     Party[] internal parties;
-    Vote[] internal Votes;
-    
+
     mapping (address => uint) getPartyIdx;  // 사용자의 파티 인덱스
     mapping (address => bool) isRefunded;   // 사용자가 환불을 받은적이 있는지 체크함
-    mapping (address => uint) isVoted;      // 사용자의 투표 횟수
-    
+    mapping (address => bool) isVoted;      // 사용자가 투표를 한적이 있는지 체크함
+
     uint emptyPartyIdx = 1;                 // 비어있는 파티 인덱스
     bool isEmptyParty = false;              // 빈 파티 유무
-    uint totalPartyNumber = 0;                   // 방 개수
+    uint totalPartyNumber = 0;              // 방 개수
     uint value = 100000000000000000;        // 1Klay, peb단위
-    bool canRefund = false;                 //환불 가능
-    uint totalVote = 0;                     //지금까지 행해진 투표 수
+
+    struct Vote {
+        uint votePeople;                    // 투표자 수
+        uint cons;                          // 반대 수
+        string reason;
+    }
 
     struct Party {
         address owner;
         uint startTime;                     // 방장이 start한 시점의 시간 저장
+        uint endTime;
         uint people;
-        uint voteIdx;                     //해당 방의 투표 실행 횟수
-        bool isVoting;
         string accountId;
         string accountPassword;
+        bool isBreak;
+        Vote vote;
     }
     
-    struct Vote {
-        uint votePeople;                        //투표자 수
-        uint cons;                          //반대 수
-    }
-
     /*
     ** getMyPartyInfo() 함수
     ** 인자:    x
@@ -45,14 +44,17 @@ contract ShareContract {
     **          uint: 참여한 파티의 인덱스
     **          bool: 내가 방장인지
     **          uint: 파티 시작 시각
+    **          uint: 파티 종료 시각 (투표로 인한 종료도 포함)
     **          uint: 파티 참여 인원
+    **          uint: 투표 참여 인원
+    **          uint: 반대 투표 개수
     */
-    function getPartyInfo() public view returns (uint, bool, uint, uint) {
+    function getPartyInfo() public view returns (uint, bool, bool, uint, uint, uint, uint, uint, string memory) {
         uint id = getPartyIdx[msg.sender];
         Party memory party = parties[id];
-        return (id, party.owner == msg.sender, party.startTime, party.people);
+        return (id, party.owner == msg.sender, party.isBreak, party.startTime, party.endTime, party.people, party.vote.votePeople, party.vote.cons, party.vote.reason);
     }
-    
+
     /*
     ** createParty() 함수
     ** 인자:    x
@@ -61,9 +63,10 @@ contract ShareContract {
     */
     function createParty(string memory accountId,string memory accountPassword) public {
         require(getPartyIdx[msg.sender] == 0);
-        uint id = parties.push(Party(msg.sender, 0, 1, 0, false, accountId, accountPassword)) - 1;
+        uint id = parties.push(Party(msg.sender, 0, 0, 1, accountId, accountPassword, false, Vote(0, 0, ""))) - 1;
         getPartyIdx[msg.sender] = id;
         isRefunded[msg.sender] = true;
+        isVoted[msg.sender] = false;
         totalPartyNumber++;
         isEmptyParty = true;
     }
@@ -101,6 +104,7 @@ contract ShareContract {
         getPartyIdx[msg.sender] = emptyPartyIdx;
         require(msg.sender != parties[emptyPartyIdx].owner);
         isRefunded[msg.sender] = false;
+        isVoted[msg.sender] = false;
         parties[emptyPartyIdx].people++;
         if(parties[emptyPartyIdx].people == 4)
             _updateEmptyPartyIdx();
@@ -129,9 +133,10 @@ contract ShareContract {
     */
     function startParty() public {
         uint idx = getPartyIdx[msg.sender]; 
-        require(parties[idx].owner == msg.sender); // 방장이 이 함수를 호출해야함
-        require(parties[idx].people == 4); // 4명일때만 시작 가능
+        require(parties[idx].owner == msg.sender);  // 방장이 이 함수를 호출해야함
+        require(parties[idx].people == 4);          // 4명일때만 시작 가능
         parties[idx].startTime = now;
+        parties[idx].endTime = now + 30 days;
     }
 
     /*
@@ -145,13 +150,13 @@ contract ShareContract {
     **          환불을 받을 조건을 명시.
     */
     modifier refundable() {
-        uint senderPartyIdx = getPartyIdx[msg.sender];
-        uint normalDays = now - parties[senderPartyIdx].startTime;
-        require(parties[senderPartyIdx].startTime != 0);
+        uint id = getPartyIdx[msg.sender];
+        Party memory party = parties[id];
+        require(party.startTime != 0);
+        uint normalDays = party.endTime - party.startTime;
         require(normalDays < 30 days);
         require(isRefunded[msg.sender] == false);
-        require(canRefund == true);
-        require(msg.sender != parties[senderPartyIdx].owner);
+        require(msg.sender != parties[id].owner);
         _;
     }
     
@@ -163,8 +168,8 @@ contract ShareContract {
     **          환불을 받을 금액을 반환하는 함수.
     **          지불한 금액에서 파티가 정상적으로 진행된 날짜만큼 차감하여 환불함.
     */
-    function _calculateRefund(uint startTime) internal view returns (uint) {
-        uint passedDay = now - startTime;//now,startTime은  초단위
+    function _calculateRefund(uint startTime, uint endTime) internal view returns (uint) {
+        uint passedDay = endTime - startTime;//now,startTime은  초단위
         uint oneDayCost = value / (30*24*60*60); // 1초당 가격 
         uint refund = oneDayCost * (30 days - passedDay); // 1초당가격 * 남은 기간(초) (환불받을 가격)
         return refund;
@@ -178,10 +183,11 @@ contract ShareContract {
     **          모든 파티원에게 환불이 이루어지는 함수.
     */
     function breakUpParty() external refundable() {
-        uint partyIdx = getPartyIdx[msg.sender];
+        uint id = getPartyIdx[msg.sender];
+        Party memory party = parties[id];
         isRefunded[msg.sender] = true;
         getPartyIdx[msg.sender] = 0;
-        transfer(_calculateRefund(parties[partyIdx].startTime));
+        transfer(_calculateRefund(party.startTime, party.endTime));
     }
  
     /*
@@ -192,12 +198,12 @@ contract ShareContract {
     **       여기서 now는 조기 종료된 시점이어야하므로 조기 종료되었을 때 해당 함수를 바로 실행해야함
     */
     function withdrawBreakParty() public {
-        require(canRefund == true);
-        uint partyIdx = getPartyIdx[msg.sender];
-        uint passedDay = now - parties[partyIdx].startTime;
+        uint id = getPartyIdx[msg.sender];
+        Party memory party = parties[id];
+        require(party.startTime != 0 && party.endTime != 0);
+        uint passedDay = party.endTime - party.startTime;
         uint oneDayCost = value / (30*24*60*60); // 1초당 가격
         uint refund = oneDayCost * passedDay; // 1초당가격 * 지난기간
-
         getPartyIdx[msg.sender] = 0;
         transfer(refund);
     }
@@ -252,20 +258,26 @@ contract ShareContract {
         return true;
     }
     
+    function getPartyVoteInfo() public view returns (uint, uint, string memory) {
+        uint id = getPartyIdx[msg.sender];
+        Party memory party = parties[id];
+        return (party.vote.votePeople, party.vote.cons, party.vote.reason);
+    }
+
     /*
     ** createVote() 함수
     ** 인자:    x
     ** 반환값:  x
-    ** 설명: 투표를 생성하는 함수. 누군가 생성하면 알림보내는 기능 만들어야함. 총 투표와 파티당 투표횟수를 세줌.
+    ** 설명: 투표를 생성하는 함수
     */
-    
-    function createVote() public {
+    function createVote(string reason) public {
+        require(isVoted[msg.sender] == false);
         uint id = getPartyIdx[msg.sender];
-        Votes.push(Vote(0,0));
-        parties[id].voteIdx++;
-        totalVote++;
-        canRefund = false;
-        parties[id].isVoting = true;
+        Party memory party = parties[id];
+        require(party.vote.votePeople == 0 && party.vote.cons == 0);
+        parties[id].vote.votePeople = 1;
+        parties[id].vote.reason = reason;
+        isVoted[msg.sender] = true;
     }
     
     /*
@@ -275,45 +287,21 @@ contract ShareContract {
     ** 설명:    사용자에게 폭파 찬성, 반대 값을 받음. 실행될때마다 voteCheck실행.
     **          isVoted를 이용해 1번만 투표 가능하게 함. 반대표, 총 투표인원 세어줌.
     */
-    
     function voting(bool election) public {
+        require(isVoted[msg.sender] == false);
+        isVoted[msg.sender] = true;
         uint id = getPartyIdx[msg.sender];
-        require(isVoted[msg.sender] == parties[id].voteIdx-1);
-        isVoted[msg.sender]++;
-        Votes[totalVote-1].votePeople++;
-        if(election == false){
-            Votes[totalVote-1].cons++;
+        Party memory party = parties[id];
+        parties[id].vote.votePeople++;
+        if(election == false) {
+            parties[id].vote.cons++;
         }
-        voteCheck();
-    }   
-    
-    /*
-    ** voteCheck() 함수
-    ** 인자:    x
-    ** 반환값:  x
-    ** 설명:    만약 4명 모두 투표하면 voteResult실행.
-    */
-    
-    function voteCheck() internal {
-        if(Votes[totalVote-1].votePeople == 4){
-            parties[getPartyIdx[msg.sender]].isVoting = false;
-            voteResult();
+        // 내가 마지막으로 투표했는데 폭파시키기로 결정되면 투표를 종료함
+        if (party.people == 4) {
+            if (party.vote.cons <= 1) {
+                parties[id].endTime = now;
+                parties[id].isBreak = true;
+            }
         }
     }
-    
-    /*
-    ** voteResult() 함수
-    ** 인자:    x
-    ** 반환값:  x
-    ** 설명:    만약 반대표가 없으면 환불이 가능하게 canRefund를 true로 만듦.
-    */
-    
-    function voteResult() internal {
-        if(Votes[totalVote-1].cons <= 1){
-            canRefund = true;
-        }
-    }
-    
-    function isVoteCheck() public view returns (bool){
-        return parties[getPartyIdx[msg.sender]].isVoting;
-    }
+}
