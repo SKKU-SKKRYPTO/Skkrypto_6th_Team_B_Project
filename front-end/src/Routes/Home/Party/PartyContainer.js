@@ -223,16 +223,16 @@ const CurrentVote = ({votingYes, votingNo, votePeople, cons, createVote}) => {
 					}
 				</VoteContent>
 			</VoteWrapper>
-			) : <VoteWrapper>
-				<Notion>
-					<Wrapper>
-						진행중인 투표가 없어요.
-						<Button onClick={createVote}>
-							투표 만들기
-						</Button>
-					</Wrapper>
-				</Notion>
-			</VoteWrapper>
+		) : <VoteWrapper>
+			<Notion>
+				<Wrapper>
+					진행중인 투표가 없어요.
+					<Button onClick={createVote}>
+						투표 만들기
+					</Button>
+				</Wrapper>
+			</Notion>
+		</VoteWrapper>
 	)
 }
 

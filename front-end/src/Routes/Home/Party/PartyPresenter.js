@@ -151,31 +151,31 @@ const User = ({num, error, user}) => {
 const PartyPresenter = ({isOwner, me, participants, startTime, people, vote, cons, loading, error, createVote }) => (
 	loading ? <Loader /> : (
 		<PresenterWrapper>
-					<Container>
-						<Owner error={error} isOwner={isOwner}/>
-						{
-							isOwner === false ?
-								<Me error={error} user={me} getPartyOut={this.getPartyOut} />
-							: null
-						}
-						<User num={1} error={error} user={participants[0]}/>
-						<User num={2} error={error} user={participants[1]}/>
-						{
-							isOwner === true ?
-								<User num={3} error={error} user={participants[2]}/>
-							: null
-						}
-					</Container>
-					{
-						// 파티가 시작했으면 투표버튼 활성화
-						startTime !== 0 ?
-							<BottomButton onClick={this.createVote}>투표제기</BottomButton> :
-							people === 4 ?
-								<BottomButton onClick={this.startParty}>파티 시작</BottomButton> :
-								null
-							
-					}
-				</PresenterWrapper>
+			<Container>
+				<Owner error={error} isOwner={isOwner}/>
+				{
+					isOwner === false ?
+						<Me error={error} user={me} getPartyOut={this.getPartyOut} />
+					: null
+				}
+				<User num={1} error={error} user={participants[0]}/>
+				<User num={2} error={error} user={participants[1]}/>
+				{
+					isOwner === true ?
+						<User num={3} error={error} user={participants[2]}/>
+					: null
+				}
+			</Container>
+			{
+				// 파티가 시작했으면 투표버튼 활성화
+				startTime !== 0 ?
+					<BottomButton onClick={this.createVote}>투표제기</BottomButton> :
+					people === 4 ?
+						<BottomButton onClick={this.startParty}>파티 시작</BottomButton> :
+						null
+					
+			}
+		</PresenterWrapper>
 	)
 )
 

@@ -270,7 +270,7 @@ contract ShareContract {
     ** 반환값:  x
     ** 설명: 투표를 생성하는 함수
     */
-    function createVote(string  memory reason) public {
+    function createVote(string memory reason) public {
         require(isVoted[msg.sender] == false);
         uint id = getPartyIdx[msg.sender];
         Party memory party = parties[id];
@@ -297,7 +297,7 @@ contract ShareContract {
             parties[id].vote.cons++;
         }
         // 내가 마지막으로 투표했는데 폭파시키기로 결정되면 투표를 종료함
-        if (party.people == 4) {
+        if (party.vote.votePeople == 4) {
             if (party.vote.cons <= 1) {
                 parties[id].endTime = now;
                 parties[id].isBreak = true;
