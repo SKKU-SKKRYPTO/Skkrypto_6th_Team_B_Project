@@ -54,7 +54,7 @@ const OwnerContent = styled.div`
 
 const ButtonList = styled.div`
 	display: flex;
-	height: 450px;
+	height: 400px;
 	justify-content: center;
 	align-items: flex-end;
 `;
@@ -77,6 +77,11 @@ const Notion = styled.span`
 	margin: 10px 20px;
 	font-weight: bold;
 	display: block;
+`;
+
+const Title = styled.span`
+	font-size: 20px;
+	font-weight: bold;
 `;
 
 const FlexWrapper = styled.div`
@@ -247,8 +252,8 @@ class PartyContainer extends React.Component {
 			isValid: false,
 			isOwner: false,
 			isBreak: false,
-			startTime: '',
-			endTime: '',
+			startTime: null,
+			endTime: null,
 			people: 0,
 			votePeople: 0,
 			cons: 0,
@@ -271,8 +276,10 @@ class PartyContainer extends React.Component {
 		try {
 			const party = await this.shareContract.methods.getPartyInfo().call({ from: this.walletAddress });
 			const isValid = party[0] !== "0" ? true : false;
-			this.setState({ isValid: isValid, isOwner: party[1], isBreak: party[2], startTime: parseInt(party[3]),
-				endTime: parseInt(party[4]), people: parseInt(party[5]), votePeople: parseInt(party[6]), cons: parseInt(party[7]), reason: party[8] });
+			const startTime = new Date(parseInt(party[3]) * 1000);
+			const endTime = new Date(parseInt(party[4]) * 1000);
+			this.setState({ isValid: isValid, isOwner: party[1], isBreak: party[2], startTime: startTime,
+				endTime: endTime, people: parseInt(party[5]), votePeople: parseInt(party[6]), cons: parseInt(party[7]), reason: party[8] });
 		} catch {
 			this.setState({
 				error: "클레이튼 노드와 통신중에 에러가 발생했어요."
@@ -374,11 +381,6 @@ class PartyContainer extends React.Component {
 		} = this.state;
 		const me = {curr: "매칭 검증"};
 
-		// startTime을 유저 친화적으로 변환
-		let timestamp = startTime * 1000;
-		let date = new Date(timestamp);
-		console.log(date);
-
 		const participants = [];
 		if (isOwner) {
 			for (let i = 1; i < people; i++) {
@@ -432,6 +434,15 @@ class PartyContainer extends React.Component {
 								</PresenterWrapper>
 							) : (
 								<PresenterWrapper>
+									<Title>
+										공지사항
+										{
+											startTime !== null ? <div>파티가 {(startTime.getMonth() + 1) + "월 " + startTime.getDate() + "일"}에 시작되어 {(endTime.getMonth() + 1) + "월 " + endTime.getDate() + "일"}에 끝나요.</div> : null
+										}
+										{
+											votePeople !== 0 ? <div>투표가 진행중이에요 !</div> : null
+										}
+									</Title>
 									<Container>
 										<Owner error={error} isOwner={isOwner} getPartyOut={this.getPartyOut}/>
 										{
