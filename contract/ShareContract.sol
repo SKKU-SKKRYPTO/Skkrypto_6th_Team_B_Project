@@ -297,7 +297,7 @@ contract ShareContract {
             parties[id].vote.cons++;
         }
         // 내가 마지막으로 투표했는데 폭파시키기로 결정되면 투표를 종료함
-        if (party.vote.votePeople == 4) {
+        if (parties[id].vote.votePeople == 4) {
             if (party.vote.cons <= 1) {
                 parties[id].endTime = now;
                 parties[id].isBreak = true;
