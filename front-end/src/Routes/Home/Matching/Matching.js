@@ -109,7 +109,7 @@ class Matching extends React.Component{
                     <div className="matching-container">
                         <div className="Party-owner">
                             <h2>파티장</h2>
-                            <p>- 매월 3700원(Klay 변경?)</p>
+                            <p>- 매월 3,650원을 KLAY로 지불</p>
                             <p>- 파티원에 비해 월 500원 절감</p>
                             <button className="create-party" onClick={() => this._openModal()}>매칭하기</button>
                             <Modal className="account-modal"
@@ -142,7 +142,7 @@ class Matching extends React.Component{
                         </div>
                         <div className="Party-member">
                             <h2>파티원</h2>
-                            <p>- 매월 4200원</p>
+                            <p>- 매월 4,000원을 KLAY로 지불</p>
                             <p>- 계정가입 필요없이 영상 서비스 이용</p>
                             <button className="create-party" onClick={this.joinParty}>매칭하기</button>
                         </div>
