@@ -332,6 +332,7 @@ class PartyContainer extends React.Component {
 		this.votingNo = this.votingNo.bind(this);
 		this.withdrawBreakParty = this.withdrawBreakParty.bind(this);
 		this.breakUpParty = this.breakUpParty.bind(this);
+		this.withdraw = this.withdraw.bind(this);
 	}
 
 	async componentDidMount() {
@@ -446,6 +447,15 @@ class PartyContainer extends React.Component {
 		}
 	}
 
+	async withdraw() {
+		try {
+			await this.shareContract.methods.withdraw().send({ from: this.walletAddress, gas: '200000'});
+			alert("송금이 완료되었습니다.");
+		} catch {
+			alert("문제가 생겨서 인출하지 못했어요😥");
+		}
+	}
+
 	render() {
 		const {
 			isValid,
@@ -520,7 +530,29 @@ class PartyContainer extends React.Component {
 							) :
 							(
 								isFinish ? (
-									<div>끝났어요</div>
+									<PresenterWrapper>
+										<Container>
+											<FlexWrapper>
+												{
+													isOwner ? (
+														<>
+															<Notion>
+																한달이 지났어요. 아래 버튼을 눌러 송금받으세요.
+															</Notion>
+															<CenterButton onClick={this.withdraw}>
+																송금하기
+															</CenterButton>
+														</>
+													) : (
+														<Notion>
+															한달이 지났어요. 새로운 파티를 찾아볼까요 ?
+														</Notion>
+													)
+												}
+											</FlexWrapper>
+										</Container>
+									</PresenterWrapper>
+									
 								) : (
 									<PresenterWrapper>
 										<Title>
