@@ -15,15 +15,18 @@
 ```
 git clone https://github.com/SKKU-SKKRYPTO/Skkrypto_6th_Team_B_Project.git
 
-cd front-end
+cd ./Skkrypto_6th_Team_B_Project/front-end/
 
 npm install
 
 npm run start
 ```
 
-혹은 [N-share](https://skku-skkrypto.github.io/Skkrypto_6th_Team_B_Project/) 에서 이용가능
+혹은 [N-Share](https://skku-skkrypto.github.io/Skkrypto_6th_Team_B_Project/) 에서 이용가능
 
 ## 시작 (Getting started)
 
 1. [Klaytn Wallet](https://baobab.wallet.klaytn.com/) 에서 계정 생성
+2. 생성한 계정으로 N-Share 로그인
+3. 자신의 계정을 공유하고 싶다면 파티장 => 매칭하기
+4. 다른 사람의 계정을 공유받고 싶다면 파티원 => 매칭하기
