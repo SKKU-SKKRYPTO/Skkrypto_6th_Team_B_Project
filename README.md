@@ -12,5 +12,18 @@
 (With auto-matching system, user don't have to find their match by themselves.)
 
 ## 설치 (Installation)
+```
+git clone https://github.com/SKKU-SKKRYPTO/Skkrypto_6th_Team_B_Project.git
+
+cd front-end
+
+npm install
+
+npm run start
+```
+
+혹은 [N-share](https://skku-skkrypto.github.io/Skkrypto_6th_Team_B_Project/) 에서 이용가능
 
 ## 시작 (Getting started)
+
+1. [Klaytn Wallet](https://baobab.wallet.klaytn.com/) 에서 계정 생성
